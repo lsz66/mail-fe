@@ -16,7 +16,6 @@ export default class Inbox extends Component {
   componentWillMount() {
     MailApi.getInbox()
       .then((resp) => {
-        console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
       });
   }
@@ -79,6 +78,10 @@ export default class Inbox extends Component {
     });
   };
 
+  renderOpenMail = (id, index, mail) => {
+    return <a href="javascript:;">{mail.subject}</a>;
+  };
+
   render() {
     const { dataSource, isLoading } = this.state;
     return (
@@ -107,9 +110,10 @@ export default class Inbox extends Component {
             selectedRowKeys: this.state.selectedKeys,
             onChange: this.onRowChange,
           }}
+          primaryKey="id"
         >
           <Table.Column width={250} title="发件人" dataIndex="from" />
-          <Table.Column width={600} title="主题" dataIndex="subject" />
+          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
           <Table.Column width={200} title="接收时间" dataIndex="receiveTime" />
           <Table.Column width={200} title="阅读时间" dataIndex="readTime" />
         </Table>
