@@ -5,25 +5,6 @@ import ContainerTitle from '../../../../components/ContainerTitle';
 
 const { Row, Col } = Grid;
 
-const mockData = [
-  {
-    title: '收件箱',
-    value: '87',
-  },
-  {
-    title: '发件箱',
-    value: '62',
-  },
-  {
-    title: '草稿箱',
-    value: '123',
-  },
-  {
-    title: '垃圾箱',
-    value: '10',
-  },
-];
-
 export default class Overview extends Component {
   static displayName = 'Overview';
 
@@ -33,16 +14,22 @@ export default class Overview extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      unread: '··',
+      inbox: '···',
+      outbox: '···',
+      draft: '···',
+    };
   }
 
   render() {
+    const { unread, inbox, outbox, draft } = this.state;
     return (
       <div>
         <ContainerTitle title="总概览" />
         <IceContainer style={styles.container}>
           <Row>
-            <Col l="5">
+            <Col l="4">
               <div style={styles.item}>
                 <img
                   src="https://gw.alipayobjects.com/zos/rmsportal/heTdoQXAHjxNGiLSUkYA.svg"
@@ -50,16 +37,30 @@ export default class Overview extends Component {
                 />
               </div>
             </Col>
-            {mockData.map((item, index) => {
-              return (
-                <Col l="4" key={index}>
-                  <div style={styles.item}>
-                    <p style={styles.itemTitle}>{item.title}</p>
-                    <p style={styles.itemValue}>{item.value}</p>
-                  </div>
-                </Col>
-              );
-            })}
+            <Col l="5">
+              <div style={styles.item}>
+                <p style={styles.itemTitle}>新消息</p>
+                <p style={styles.itemValue}>{unread}</p>
+              </div>
+            </Col>
+            <Col l="5">
+              <div style={styles.item}>
+                <p style={styles.itemTitle}>收件箱</p>
+                <p style={styles.itemValue}>{inbox}</p>
+              </div>
+            </Col>
+            <Col l="5">
+              <div style={styles.item}>
+                <p style={styles.itemTitle}>发件箱</p>
+                <p style={styles.itemValue}>{outbox}</p>
+              </div>
+            </Col>
+            <Col l="5">
+              <div style={styles.item}>
+                <p style={styles.itemTitle}>草稿箱</p>
+                <p style={styles.itemValue}>{draft}</p>
+              </div>
+            </Col>
           </Row>
         </IceContainer>
       </div>
