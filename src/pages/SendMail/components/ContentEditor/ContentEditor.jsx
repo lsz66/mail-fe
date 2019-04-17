@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import BraftEditor from 'braft-editor';
+import 'braft-editor/dist/braft.css';
 import IceContainer from '@icedesign/container';
 import { Button, Form, Grid, Input, Message } from '@alifd/next';
 import {
@@ -6,8 +8,7 @@ import {
   FormBinderWrapper as IceFormBinderWrapper,
   FormError as IceFormError,
 } from '@icedesign/form-binder';
-
-import RichEditor from './RichEditor';
+import MailApi from '../../../../api/mail';
 
 const { Row, Col } = Grid;
 const FormItem = Form.Item;
@@ -22,18 +23,12 @@ export default class ContentEditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: {
-        title: '',
-        desc: '',
-        author: '',
-        body: null,
-        cats: [],
-      },
+      value: {},
+      sending: false,
     };
   }
 
   formChange = (value) => {
-    console.log('value', value);
     this.setState({
       value,
     });
@@ -41,12 +36,18 @@ export default class ContentEditor extends Component {
 
   handleSubmit = () => {
     this.postForm.validateAll((errors, values) => {
-      console.log('errors', errors, 'values', values);
       if (errors) {
         return false;
       }
-
-      Message.success('提交成功');
+      this.setState({ sending: true });
+      MailApi.send(values)
+        .then(() => {
+          this.setState({ sending: false });
+          Message.success('发送成功');
+        })
+        .catch(() => {
+          Message.error('发送失败，可能是服务器出错');
+        });
     });
   };
 
@@ -66,34 +67,37 @@ export default class ContentEditor extends Component {
               <Row>
                 <Col span="24">
                   <FormItem label="收件人" required>
-                    <IceFormBinder name="title" required message="标题必填">
-                      <Input placeholder="这里填写文档标题" />
+                    <IceFormBinder name="to" required message="收件人必填">
+                      <Input placeholder="请填写收件人" />
                     </IceFormBinder>
-                    <IceFormError name="title" />
+                    <IceFormError name="to" />
                   </FormItem>
                 </Col>
               </Row>
               <Row>
                 <Col span="24">
-                  <FormItem label="主题" required>
+                  <FormItem label="主题">
                     <IceFormBinder
-                      name="author"
-                      required
-                      message="作者信息必填"
+                      name="subject"
                     >
-                      <Input placeholder="填写作者名称" />
+                      <Input placeholder="请填写邮件主题" />
                     </IceFormBinder>
-                    <IceFormError name="author" />
+                    <IceFormError name="subject" />
                   </FormItem>
                 </Col>
               </Row>
-              <FormItem label="正文" required>
-                <IceFormBinder name="body">
-                  <RichEditor />
+              <FormItem label="正文">
+                <IceFormBinder name="text">
+                  <BraftEditor
+                    height={300}
+                    contentFormat="html"
+                    value="<p></p>"
+                    onChange={this.handleText}
+                  />
                 </IceFormBinder>
               </FormItem>
               <FormItem label=" ">
-                <Button type="primary" onClick={this.handleSubmit}>
+                <Button type="primary" onClick={this.handleSubmit} loading={this.state.sending}>
                   发送
                 </Button>
               </FormItem>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Balloon, Button, Icon, Pagination, Table } from '@alifd/next';
+import { Button, Pagination, Table } from '@alifd/next';
 import MailApi from '../../api/mail';
 
 export default class Inbox extends Component {
@@ -13,12 +13,16 @@ export default class Inbox extends Component {
     };
   }
 
-  componentWillMount() {
+  getData = () => {
+    this.setState({ isLoading: true });
     MailApi.getInbox()
       .then((resp) => {
-        console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
       });
+  };
+
+  componentWillMount() {
+    this.getData();
   }
 
   handlePagination = (current) => {
@@ -41,33 +45,11 @@ export default class Inbox extends Component {
     });
   };
 
-  renderCatrgory = (value) => {
-    return (
-      <Balloon
-        align="lt"
-        trigger={<div style={{ margin: '5px' }}>{value}</div>}
-        closable={false}
-        style={{ lineHeight: '24px' }}
-      >
-        皮肤科属于外科，主要治疗各种皮肤病，常见皮肤病有牛皮癣 、 疱疹
-        、酒渣鼻等
-      </Balloon>
-    );
-  };
-
   renderState = (value) => {
     return (
       <div style={styles.state}>
         <span style={styles.circle} />
         <span style={styles.stateText}>{value}</span>
-      </div>
-    );
-  };
-
-  renderOper = () => {
-    return (
-      <div style={styles.oper}>
-        <Icon type="edit" size="small" style={styles.editIcon} />
       </div>
     );
   };
@@ -86,7 +68,7 @@ export default class Inbox extends Component {
         <div style={styles.tableFilter}>
           <div style={styles.title}>收件箱</div>
           <div style={styles.filter}>
-            <Button type="primary" style={styles.button}>
+            <Button type="primary" style={styles.button} onClick={this.getData}>
               刷新
             </Button>
             <Button type="primary" style={styles.button} warning>

@@ -6,9 +6,25 @@ import IceImg from '@icedesign/img';
 import { headerMenuConfig } from '../../../../menuConfig';
 import Logo from '../Logo';
 import './Header.scss';
+import UserApi from '../../../../api/user';
 
 @withRouter
 export default class Header extends Component {
+  state = { name: '' };
+
+  componentWillMount() {
+    UserApi.getName()
+      .then((resp) => {
+        this.setState({ name: resp.data });
+      });
+  }
+
+  handleLogout = () => {
+    UserApi.logout()
+      .then(() => {
+      });
+  };
+
   render() {
     const { location = {} } = this.props;
     const { pathname } = location;
@@ -121,7 +137,7 @@ export default class Header extends Component {
                   />
                   <div className="user-profile">
                     <span className="user-name" style={{ fontSize: '13px' }}>
-                      李尚哲
+                      {this.state.name}
                     </span>
                   </div>
                   <Icon
@@ -142,7 +158,7 @@ export default class Header extends Component {
                   </Link>
                 </li>
                 <li className="user-profile-menu-item">
-                  <Link to="/user/login">
+                  <Link to="/user/login" onClick={this.handleLogout}>
                     <FoundationSymbol type="compass" size="small" />
                     退出
                   </Link>

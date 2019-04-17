@@ -14,12 +14,16 @@ export default class Outbox extends Component {
   }
 
   componentWillMount() {
-    MailApi.getInbox()
+    this.getData();
+  }
+
+  getData = () => {
+    this.setState({ isLoading: true });
+    MailApi.getOutbox()
       .then((resp) => {
-        console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
       });
-  }
+  };
 
   handlePagination = (current) => {
     this.setState({
@@ -86,7 +90,7 @@ export default class Outbox extends Component {
         <div style={styles.tableFilter}>
           <div style={styles.title}>发件箱</div>
           <div style={styles.filter}>
-            <Button type="primary" style={styles.button}>
+            <Button type="primary" style={styles.button} onClick={this.getData}>
               刷新
             </Button>
             <Button type="primary" style={styles.button} warning>
@@ -105,9 +109,9 @@ export default class Outbox extends Component {
             onChange: this.onRowChange,
           }}
         >
-          <Table.Column width={250} title="收件人" dataIndex="from" />
+          <Table.Column width={250} title="收件人" dataIndex="to" />
           <Table.Column width={600} title="主题" dataIndex="subject" />
-          <Table.Column width={200} title="发送时间" dataIndex="receiveTime" />
+          <Table.Column width={200} title="发送时间" dataIndex="sendTime" />
         </Table>
         <Pagination
           style={styles.pagination}

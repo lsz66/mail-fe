@@ -1,13 +1,14 @@
 /* eslint react/no-string-refs:0 */
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Button, Checkbox, Input, Message } from '@alifd/next';
+import { Button, Input, Message } from '@alifd/next';
 import {
   FormBinder as IceFormBinder,
   FormBinderWrapper as IceFormBinderWrapper,
   FormError as IceFormError,
 } from '@icedesign/form-binder';
 import IceIcon from '@icedesign/foundation-symbol';
+import UserApi from '../../api/user';
 
 @withRouter
 class UserLogin extends Component {
@@ -23,7 +24,6 @@ class UserLogin extends Component {
       value: {
         username: '',
         password: '',
-        checkbox: false,
       },
     };
   }
@@ -41,9 +41,15 @@ class UserLogin extends Component {
         console.log('errors', errors);
         return;
       }
-      console.log(values);
-      Message.success('登录成功');
-      this.props.history.push('/dashboard');
+      UserApi.login(values)
+        .then((resp) => {
+          if (resp.data) {
+            Message.success('登录成功');
+            this.props.history.push('/dashboard');
+          } else {
+            Message.error('登陆失败，请检查用户名和密码');
+          }
+        });
     });
   };
 
@@ -62,8 +68,8 @@ class UserLogin extends Component {
               <IceFormBinder name="username" required message="必填">
                 <Input
                   size="large"
-                  maxLength={20}
                   placeholder="用户名"
+                  innerAfter="@szlee.cn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                   style={styles.inputCol}
                 />
               </IceFormBinder>
@@ -81,12 +87,6 @@ class UserLogin extends Component {
                 />
               </IceFormBinder>
               <IceFormError name="password" />
-            </div>
-
-            <div style={styles.formItem}>
-              <IceFormBinder name="checkbox">
-                <Checkbox style={styles.checkbox}>记住账号</Checkbox>
-              </IceFormBinder>
             </div>
 
             <div style={styles.footer}>
