@@ -15,7 +15,7 @@ export default class Overview extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      unread: '··',
+      unread: '···',
       inbox: '···',
       outbox: '···',
       draft: '···',
