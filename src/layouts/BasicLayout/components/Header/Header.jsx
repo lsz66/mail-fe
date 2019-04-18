@@ -15,7 +15,12 @@ export default class Header extends Component {
   componentWillMount() {
     UserApi.getName()
       .then((resp) => {
-        this.setState({ name: resp.data });
+        const name = resp.data;
+        if (name.length === 0) {
+          this.props.history.push('/user/login');
+          return;
+        }
+        this.setState({ name });
       });
   }
 
