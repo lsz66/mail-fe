@@ -13,16 +13,17 @@ import Outbox from './pages/Outbox';
 import DraftBox from './pages/Draftbox';
 import SpamBox from './pages/Spambox';
 import Read from './pages/Read';
+import Success from './pages/Success';
 import Recycle from './pages/Recycle';
 
 const routerConfig = [
   {
-    path: '/inbox',
-    component: Inbox,
+    path: '/outbox',
+    component: Outbox,
   },
   {
-    path: '/user/login',
-    component: UserLogin,
+    path: '/inbox',
+    component: Inbox,
   },
   {
     path: '/dashboard',
@@ -41,8 +42,8 @@ const routerConfig = [
     component: UserRegister,
   },
   {
-    path: '/outbox',
-    component: Outbox,
+    path: '/user/login',
+    component: UserLogin,
   },
   {
     path: '/draftbox',
@@ -59,6 +60,10 @@ const routerConfig = [
   {
     path: '/read',
     component: Read,
+  },
+  {
+    path: '/success',
+    component: Success,
   },
 ];
 

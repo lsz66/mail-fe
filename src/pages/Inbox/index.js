@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import { Button, Pagination, Table } from '@alifd/next';
 import MailApi from '../../api/mail';
 
+@withRouter
 export default class Inbox extends Component {
   constructor(props) {
     super(props);
@@ -15,7 +17,7 @@ export default class Inbox extends Component {
 
   getData = () => {
     this.setState({ isLoading: true });
-    MailApi.getInbox()
+    MailApi.getList('inbox')
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
@@ -46,10 +48,12 @@ export default class Inbox extends Component {
   };
 
   renderState = (value) => {
+    const stateColor = ['#a73130', '#28a745', '#4ca5a7'];
+    const stateText = ['未读', '已读', '已复'];
     return (
       <div style={styles.state}>
-        <span style={styles.circle} />
-        <span style={styles.stateText}>{value}</span>
+        <span style={{ ...styles.circle, background: stateColor[value] }} />
+        <span style={{ color: stateColor[value] }}>{stateText[value]}</span>
       </div>
     );
   };
@@ -62,7 +66,7 @@ export default class Inbox extends Component {
   };
 
   renderOpenMail = (id, index, mail) => {
-    return <a href="javascript:;">{mail.subject}</a>;
+    return <Link to={`/read/inbox/${mail.id}`}>{mail.subject}</Link>;
   };
 
   render() {
@@ -98,7 +102,7 @@ export default class Inbox extends Component {
           <Table.Column width={250} title="发件人" dataIndex="from" />
           <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
           <Table.Column width={200} title="接收时间" dataIndex="receiveTime" />
-          <Table.Column width={200} title="阅读时间" dataIndex="readTime" />
+          <Table.Column width={100} title="状态" dataIndex="state" cell={this.renderState} />
         </Table>
         <Pagination
           style={styles.pagination}
@@ -125,14 +129,10 @@ const styles = {
   },
   circle: {
     display: 'inline-block',
-    background: '#28a745',
     width: '8px',
     height: '8px',
     borderRadius: '50px',
     marginRight: '4px',
-  },
-  stateText: {
-    color: '#28a745',
   },
   tableFilter: {
     display: 'flex',

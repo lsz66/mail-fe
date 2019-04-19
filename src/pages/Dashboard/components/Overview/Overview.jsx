@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
-import { Grid } from '@alifd/next';
+import { Grid, Message } from '@alifd/next';
 import ContainerTitle from '../../../../components/ContainerTitle';
+import UserApi from '../../../../api/user';
 
 const { Row, Col } = Grid;
 
@@ -12,14 +13,26 @@ export default class Overview extends Component {
 
   static defaultProps = {};
 
+  state = {
+    unread: '···',
+    inbox: '···',
+    outbox: '···',
+    draft: '···',
+  };
+
   constructor(props) {
     super(props);
-    this.state = {
-      unread: '···',
-      inbox: '···',
-      outbox: '···',
-      draft: '···',
-    };
+    Message.loading('正在获取邮件信息');
+    UserApi.getOverview()
+      .then((resp) => {
+        if (resp.data.length === 0) {
+          Message.error('请登陆');
+          return;
+        }
+        const { unread, inbox, outbox, draft } = resp.data;
+        this.setState({ unread, inbox, outbox, draft });
+        Message.success('获取完毕');
+      });
   }
 
   render() {

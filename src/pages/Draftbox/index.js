@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Balloon, Button, Icon, Pagination, Table } from '@alifd/next';
+import { Balloon, Button, Pagination, Table } from '@alifd/next';
 import MailApi from '../../api/mail';
 
 export default class DraftBox extends Component {
@@ -14,7 +14,7 @@ export default class DraftBox extends Component {
   }
 
   componentWillMount() {
-    MailApi.getInbox()
+    MailApi.getList('draft')
       .then((resp) => {
         console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
@@ -52,23 +52,6 @@ export default class DraftBox extends Component {
         皮肤科属于外科，主要治疗各种皮肤病，常见皮肤病有牛皮癣 、 疱疹
         、酒渣鼻等
       </Balloon>
-    );
-  };
-
-  renderState = (value) => {
-    return (
-      <div style={styles.state}>
-        <span style={styles.circle} />
-        <span style={styles.stateText}>{value}</span>
-      </div>
-    );
-  };
-
-  renderOper = () => {
-    return (
-      <div style={styles.oper}>
-        <Icon type="edit" size="small" style={styles.editIcon} />
-      </div>
     );
   };
 

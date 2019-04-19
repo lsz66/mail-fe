@@ -14,7 +14,7 @@ export default class SpamBox extends Component {
   }
 
   componentWillMount() {
-    MailApi.getInbox()
+    MailApi.getList('spam')
       .then((resp) => {
         console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });

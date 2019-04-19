@@ -3,16 +3,9 @@ import BASE_URL from './index';
 
 const SERVICE_URL = '/mail';
 
-async function getInbox() {
+async function getList(box) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getInbox`,
-    method: 'get',
-  });
-}
-
-async function getOutbox() {
-  return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getOutbox`,
+    url: `${BASE_URL}${SERVICE_URL}/getList/${box}`,
     method: 'get',
   });
 }
@@ -24,8 +17,15 @@ async function send(data) {
     data,
   });
 }
+
+async function read(box, id) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/getMsg/${box}/${id}`,
+    method: 'get',
+  });
+}
 export default {
-  getInbox,
-  getOutbox,
-  send
+  getList,
+  send,
+  read,
 };

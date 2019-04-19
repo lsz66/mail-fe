@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Balloon, Button, Icon, Pagination, Table } from '@alifd/next';
+import { Link, withRouter } from 'react-router-dom';
+import { Button, Pagination, Table } from '@alifd/next';
 import MailApi from '../../api/mail';
 
+@withRouter
 export default class Outbox extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +21,7 @@ export default class Outbox extends Component {
 
   getData = () => {
     this.setState({ isLoading: true });
-    MailApi.getOutbox()
+    MailApi.getList('outbox')
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
@@ -45,35 +47,8 @@ export default class Outbox extends Component {
     });
   };
 
-  renderCatrgory = (value) => {
-    return (
-      <Balloon
-        align="lt"
-        trigger={<div style={{ margin: '5px' }}>{value}</div>}
-        closable={false}
-        style={{ lineHeight: '24px' }}
-      >
-        皮肤科属于外科，主要治疗各种皮肤病，常见皮肤病有牛皮癣 、 疱疹
-        、酒渣鼻等
-      </Balloon>
-    );
-  };
-
-  renderState = (value) => {
-    return (
-      <div style={styles.state}>
-        <span style={styles.circle} />
-        <span style={styles.stateText}>{value}</span>
-      </div>
-    );
-  };
-
-  renderOper = () => {
-    return (
-      <div style={styles.oper}>
-        <Icon type="edit" size="small" style={styles.editIcon} />
-      </div>
-    );
+  renderOpenMail = (id, index, mail) => {
+    return <Link to={`/read/outbox/${mail.id}`}>{mail.subject}</Link>;
   };
 
   onRowChange = (selectedKeys) => {
@@ -110,7 +85,7 @@ export default class Outbox extends Component {
           }}
         >
           <Table.Column width={250} title="收件人" dataIndex="to" />
-          <Table.Column width={600} title="主题" dataIndex="subject" />
+          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
           <Table.Column width={200} title="发送时间" dataIndex="sendTime" />
         </Table>
         <Pagination

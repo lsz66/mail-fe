@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Balloon, Icon, Nav } from '@alifd/next';
 import FoundationSymbol from '@icedesign/foundation-symbol';
-import IceImg from '@icedesign/img';
 import { headerMenuConfig } from '../../../../menuConfig';
 import Logo from '../Logo';
 import './Header.scss';
@@ -134,12 +133,6 @@ export default class Header extends Component {
                     fontSize: 12,
                   }}
                 >
-                  <IceImg
-                    height={40}
-                    width={40}
-                    src={require('./images/lsz.png')}
-                    className="user-avatar"
-                  />
                   <div className="user-profile">
                     <span className="user-name" style={{ fontSize: '13px' }}>
                       {this.state.name}

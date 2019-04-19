@@ -3,11 +3,19 @@ import BASE_URL from './index';
 
 const SERVICE_URL = '/user';
 
-async function login(params) {
+async function login(data) {
   return axios({
     url: `${BASE_URL}${SERVICE_URL}/login`,
     method: 'post',
-    params,
+    data,
+  });
+}
+
+async function register(data) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/register`,
+    method: 'post',
+    data,
   });
 }
 
@@ -34,6 +42,7 @@ async function getOverview() {
 
 export default {
   login,
+  register,
   getName,
   logout,
   getOverview,

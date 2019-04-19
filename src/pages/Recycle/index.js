@@ -14,7 +14,7 @@ export default class Recycle extends Component {
   }
 
   componentWillMount() {
-    MailApi.getInbox()
+    MailApi.getList('recycle')
       .then((resp) => {
         console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
