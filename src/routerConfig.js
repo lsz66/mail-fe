@@ -7,23 +7,24 @@ import Dashboard from './pages/Dashboard';
 
 import Setting from './pages/Setting';
 import SendMail from './pages/SendMail';
+import Read from './pages/Read';
+import Success from './pages/Success';
 
 import Inbox from './pages/Inbox';
 import Outbox from './pages/Outbox';
 import DraftBox from './pages/Draftbox';
 import SpamBox from './pages/Spambox';
-import Read from './pages/Read';
-import Success from './pages/Success';
+import EditMail from './pages/EditMail';
 import Recycle from './pages/Recycle';
 
 const routerConfig = [
   {
-    path: '/outbox',
-    component: Outbox,
+    path: '/user/login',
+    component: UserLogin,
   },
   {
-    path: '/inbox',
-    component: Inbox,
+    path: '/outbox',
+    component: Outbox,
   },
   {
     path: '/dashboard',
@@ -42,8 +43,8 @@ const routerConfig = [
     component: UserRegister,
   },
   {
-    path: '/user/login',
-    component: UserLogin,
+    path: '/inbox',
+    component: Inbox,
   },
   {
     path: '/draftbox',
@@ -64,6 +65,10 @@ const routerConfig = [
   {
     path: '/success',
     component: Success,
+  },
+  {
+    path: '/edit',
+    component: EditMail,
   },
 ];
 

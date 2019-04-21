@@ -12,7 +12,7 @@ export default class Header extends Component {
   state = { name: '' };
 
   componentWillMount() {
-    UserApi.getName()
+    UserApi.getBanner()
       .then((resp) => {
         const name = resp.data;
         if (name.length === 0) {

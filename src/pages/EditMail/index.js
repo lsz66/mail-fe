@@ -25,6 +25,13 @@ export default class ContentEditor extends Component {
       value: {},
       sending: false,
     };
+    DraftApi.getById(location.hash.substring(7))
+      .then((resp) => {
+        const { id, to, subject, text } = resp.data;
+        this.setState({
+          value: { id, to, subject, text },
+        });
+      });
   }
 
   formChange = (value) => {
@@ -51,7 +58,7 @@ export default class ContentEditor extends Component {
   };
 
   handleSave = () => {
-    DraftApi.save(this.state.value)
+    DraftApi.update(this.state.value)
       .then(() => {
         Message.success('保存成功');
         this.props.history.push('/draftbox');
@@ -61,8 +68,8 @@ export default class ContentEditor extends Component {
   handleExit = () => {
     Dialog.confirm({
       title: '确定',
-      content: '您确定要退出吗？邮件将会被丢弃',
-      onOk: () => this.props.history.push('/inbox'),
+      content: '您确定要退出吗？修改的部分将会被丢弃',
+      onOk: () => this.props.history.push('/draftbox'),
     });
   };
 
@@ -77,7 +84,7 @@ export default class ContentEditor extends Component {
           onChange={this.formChange}
         >
           <IceContainer>
-            <h2 style={styles.title}>写邮件</h2>
+            <h2 style={styles.title}>编辑邮件</h2>
             <Form labelAlign="top" style={styles.form}>
               <Row>
                 <Col span="24">
@@ -104,7 +111,7 @@ export default class ContentEditor extends Component {
               <FormItem label="正文">
                 <IceFormBinder name="text">
                   <BraftEditor
-                    initialContent="<p></p>"
+                    initialContent={this.state.value.text}
                     height={300}
                     contentFormat="html"
                   />

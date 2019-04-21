@@ -65,6 +65,12 @@ class UserRegister extends Component {
     });
   };
 
+  onEnter = (e) => {
+    if (e.keyCode === 13) {
+      this.handleSubmit();
+    }
+  };
+
   handleSubmit = () => {
     this.refs.form.validateAll((errors, values) => {
       if (errors) {
@@ -103,6 +109,7 @@ class UserRegister extends Component {
                   placeholder="用户名"
                   innerAfter="@szlee.cn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                   style={styles.inputCol}
+                  onKeyUp={this.onEnter}
                 />
               </IceFormBinder>
               <IceFormError name="username" />
@@ -118,8 +125,9 @@ class UserRegister extends Component {
                 <Input
                   htmlType="password"
                   size="large"
-                  placeholder="至少8位密码"
+                  placeholder="至少6位密码"
                   style={styles.inputCol}
+                  onKeyUp={this.onEnter}
                 />
               </IceFormBinder>
               <IceFormError name="password" />
@@ -139,6 +147,7 @@ class UserRegister extends Component {
                   size="large"
                   placeholder="确认密码"
                   style={styles.inputCol}
+                  onKeyUp={this.onEnter}
                 />
               </IceFormBinder>
               <IceFormError name="re" />

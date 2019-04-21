@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Balloon, Button, Pagination, Table } from '@alifd/next';
-import MailApi from '../../api/mail';
+import { Link } from 'react-router-dom';
+import { Button, Pagination, Table } from '@alifd/next';
+import DraftApi from '../../api/draft';
 
 export default class DraftBox extends Component {
   constructor(props) {
@@ -14,7 +15,7 @@ export default class DraftBox extends Component {
   }
 
   componentWillMount() {
-    MailApi.getList('draft')
+    DraftApi.getList()
       .then((resp) => {
         console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
@@ -41,25 +42,20 @@ export default class DraftBox extends Component {
     });
   };
 
-  renderCatrgory = (value) => {
-    return (
-      <Balloon
-        align="lt"
-        trigger={<div style={{ margin: '5px' }}>{value}</div>}
-        closable={false}
-        style={{ lineHeight: '24px' }}
-      >
-        皮肤科属于外科，主要治疗各种皮肤病，常见皮肤病有牛皮癣 、 疱疹
-        、酒渣鼻等
-      </Balloon>
-    );
-  };
-
   onRowChange = (selectedKeys) => {
     console.log(selectedKeys);
     this.setState({
       selectedKeys,
     });
+  };
+
+  renderTime = (time) => {
+    return time.substring(0, 16)
+      .replace('T', ' ');
+  };
+
+  renderOpenMail = (id, index, draft) => {
+    return <Link to={`/edit/${draft.id}`}>{draft.subject}</Link>;
   };
 
   render() {
@@ -88,10 +84,9 @@ export default class DraftBox extends Component {
             onChange: this.onRowChange,
           }}
         >
-          <Table.Column width={250} title="收件人" dataIndex="from" />
-          <Table.Column width={600} title="主题" dataIndex="subject" />
-          <Table.Column width={200} title="保存时间" dataIndex="receiveTime" />
-          <Table.Column width={200} title="编辑时间" dataIndex="readTime" />
+          <Table.Column width={250} title="发送给" dataIndex="to" />
+          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
+          <Table.Column width={200} title="保存时间" dataIndex="lastModifyTime" cell={this.renderTime} />
         </Table>
         <Pagination
           style={styles.pagination}

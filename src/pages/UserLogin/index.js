@@ -21,10 +21,7 @@ class UserLogin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: {
-        username: '',
-        password: '',
-      },
+      value: {},
       isLoading: false,
     };
   }
@@ -35,8 +32,13 @@ class UserLogin extends Component {
     });
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
+  onEnter = (e) => {
+    if (e.keyCode === 13) {
+      this.handleSubmit();
+    }
+  };
+
+  handleSubmit = () => {
     this.refs.form.validateAll((errors, values) => {
       if (errors) {
         return;
@@ -67,15 +69,16 @@ class UserLogin extends Component {
           <div style={styles.formItems}>
             <div style={styles.formItem}>
               <IceIcon type="person" size="small" style={styles.inputIcon} />
-              <IceFormBinder name="email" required message="必填">
+              <IceFormBinder name="username" required message="必填">
                 <Input
                   size="large"
                   placeholder="用户名"
                   innerAfter="@szlee.cn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                   style={styles.inputCol}
+                  onKeyUp={this.onEnter}
                 />
               </IceFormBinder>
-              <IceFormError name="email" />
+              <IceFormError name="username" />
             </div>
 
             <div style={styles.formItem}>
@@ -86,6 +89,7 @@ class UserLogin extends Component {
                   htmlType="password"
                   placeholder="密码"
                   style={styles.inputCol}
+                  onKeyUp={this.onEnter}
                 />
               </IceFormBinder>
               <IceFormError name="password" />

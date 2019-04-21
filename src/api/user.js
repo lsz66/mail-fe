@@ -19,6 +19,13 @@ async function register(data) {
   });
 }
 
+async function getBanner() {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/getBanner`,
+    method: 'get',
+  });
+}
+
 async function getName() {
   return axios({
     url: `${BASE_URL}${SERVICE_URL}/getName`,
@@ -40,10 +47,29 @@ async function getOverview() {
   });
 }
 
+async function updateName(params) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/updateName`,
+    method: 'put',
+    params,
+  });
+}
+
+async function updateInfo(data) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/updateInfo`,
+    method: 'put',
+    data,
+  });
+}
+
 export default {
   login,
   register,
+  getBanner,
   getName,
   logout,
   getOverview,
+  updateName,
+  updateInfo,
 };
