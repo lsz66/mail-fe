@@ -49,11 +49,6 @@ export default class DraftBox extends Component {
     });
   };
 
-  renderTime = (time) => {
-    return time.substring(0, 16)
-      .replace('T', ' ');
-  };
-
   renderOpenMail = (id, index, draft) => {
     return <Link to={`/edit/${draft.id}`}>{draft.subject}</Link>;
   };
@@ -86,7 +81,7 @@ export default class DraftBox extends Component {
         >
           <Table.Column width={250} title="发送给" dataIndex="to" />
           <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
-          <Table.Column width={200} title="保存时间" dataIndex="lastModifyTime" cell={this.renderTime} />
+          <Table.Column width={200} title="保存时间" dataIndex="lastModifyTime" />
         </Table>
         <Pagination
           style={styles.pagination}

@@ -33,9 +33,17 @@ async function update(data) {
   });
 }
 
+async function del(id) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/${id}`,
+    method: 'delete',
+  });
+}
+
 export default {
   getList,
   getById,
   save,
   update,
+  del,
 };

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Button, Pagination, Table } from '@alifd/next';
+import { Button, Dialog, Message, Pagination, Table } from '@alifd/next';
 import MailApi from '../../api/mail';
 
 @withRouter
@@ -59,7 +59,6 @@ export default class Inbox extends Component {
   };
 
   onRowChange = (selectedKeys) => {
-    console.log(selectedKeys);
     this.setState({
       selectedKeys,
     });
@@ -67,6 +66,53 @@ export default class Inbox extends Component {
 
   renderOpenMail = (id, index, mail) => {
     return <Link to={`/read/inbox/${mail.id}`}>{mail.subject}</Link>;
+  };
+
+  handleMoveToRecycle = () => {
+    if (this.state.selectedKeys.length === 0) {
+      Message.error('请选择邮件');
+      return;
+    }
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将所选邮件移到回收站吗？',
+      onOk: () => {
+        MailApi.move(this.state.selectedKeys, 'inbox', 'recycle')
+          .then(() => {
+            Message.success('所选邮件已经移到回收站');
+            this.getData();
+            this.setState({ selectedKeys: [] });
+          });
+      },
+    });
+  };
+
+  handleDelete = () => {
+    if (this.state.selectedKeys.length === 0) {
+      Message.error('请选择邮件');
+      return;
+    }
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将所选彻底删除吗？这一操作不可恢复',
+      onOk: () => {
+        MailApi.del(this.state.selectedKeys, 'inbox')
+          .then(() => {
+            Message.success('所选邮件已删除');
+            this.getData();
+            this.setState({ selectedKeys: [] });
+          });
+      },
+    });
+  };
+
+  handleSeen = () => {
+    MailApi.setSeen(this.state.selectedKeys)
+      .then(() => {
+        Message.success('设置成功');
+        this.getData();
+        this.setState({ selectedKeys: [] });
+      });
   };
 
   render() {
@@ -79,11 +125,14 @@ export default class Inbox extends Component {
             <Button type="primary" style={styles.button} onClick={this.getData}>
               刷新
             </Button>
-            <Button type="primary" style={styles.button} warning>
-              删除
-            </Button>
-            <Button type="primary" style={styles.button}>
+            <Button type="secondary" style={styles.button} onClick={this.handleSeen}>
               标为已读
+            </Button>
+            <Button style={styles.button} onClick={this.handleMoveToRecycle}>
+              移到回收站
+            </Button>
+            <Button style={styles.button} warning onClick={this.handleDelete}>
+              彻底删除
             </Button>
           </div>
         </div>
@@ -108,6 +157,7 @@ export default class Inbox extends Component {
           style={styles.pagination}
           current={this.state.current}
           onChange={this.handlePagination}
+          total={1}
         />
       </div>
     );

@@ -48,6 +48,9 @@ export default class ContentEditor extends Component {
       this.setState({ sending: true });
       MailApi.send(values)
         .then(() => {
+          DraftApi.del(location.hash.substring(7))
+            .then(() => {
+            });
           this.props.history.push('/success');
         })
         .catch(() => {
@@ -70,6 +73,20 @@ export default class ContentEditor extends Component {
       title: '确定',
       content: '您确定要退出吗？修改的部分将会被丢弃',
       onOk: () => this.props.history.push('/draftbox'),
+    });
+  };
+
+  handleDelete = () => {
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要删除这份草稿吗？',
+      onOk: () => {
+        DraftApi.del(location.hash.substring(7))
+          .then(() => {
+            Message.success('删除成功');
+            this.props.history.push('/draftbox');
+          });
+      },
     });
   };
 
@@ -131,6 +148,9 @@ export default class ContentEditor extends Component {
                 <Button type="primary" onClick={this.handleExit} warning style={styles.buttons}>
                   不保存退出
                 </Button>
+                <Button type="primary" onClick={this.handleDelete} warning style={styles.buttons}>
+                  删除并退出
+                </Button>
               </FormItem>
             </Form>
           </IceContainer>
@@ -154,6 +174,6 @@ const styles = {
     width: '100%',
   },
   buttons: {
-    margin: '20px',
+    margin: '10px',
   },
 };

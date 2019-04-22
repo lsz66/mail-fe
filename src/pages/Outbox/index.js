@@ -52,7 +52,6 @@ export default class Outbox extends Component {
   };
 
   onRowChange = (selectedKeys) => {
-    console.log(selectedKeys);
     this.setState({
       selectedKeys,
     });
@@ -68,8 +67,8 @@ export default class Outbox extends Component {
             <Button type="primary" style={styles.button} onClick={this.getData}>
               刷新
             </Button>
-            <Button type="primary" style={styles.button} warning>
-              删除
+            <Button style={styles.button} warning>
+              彻底删除
             </Button>
           </div>
         </div>

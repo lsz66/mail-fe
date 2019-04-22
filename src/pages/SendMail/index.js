@@ -147,6 +147,6 @@ const styles = {
     width: '100%',
   },
   buttons: {
-    margin: '20px',
+    margin: '10px',
   },
 };

@@ -28,7 +28,11 @@ class UserRegister extends Component {
   checkUsername = (rule, values, callback) => {
     if (!values) {
       callback('请输入用户名');
-    } if (values.length < 3) {
+    }
+    if (!(/^[A-Za-z0-9]+$/.test(values))) {
+      callback('用户名中有非法字符，请输入仅英文或数字');
+    }
+    if (values.length < 3) {
       callback('用户名最小长度为3');
     } else if (values.length > 20) {
       callback('用户名最大长度为20');
