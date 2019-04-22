@@ -41,11 +41,11 @@ export default class ReadMail extends Component {
               <div style={styles.detailTitle}>主题</div>
               <div style={styles.detailBody}>{subject}</div>
             </li>
-            <li style={styles.detailItem}>
-              <div style={styles.detailTitle}>正文</div>
-              <div style={styles.detailBody} dangerouslySetInnerHTML={{ __html: text }} />
-            </li>
           </ul>
+        </IceContainer>
+        <IceContainer title="正文">
+          <hr />
+          <div style={styles.textBody} dangerouslySetInnerHTML={{ __html: text }} />
         </IceContainer>
       </div>
     );
@@ -66,6 +66,9 @@ const styles = {
   },
   detailBody: {
     flex: 1,
+  },
+  textBody: {
+    margin: '30px',
   },
   statusProcessing: {
     color: '#64D874',
