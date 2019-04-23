@@ -40,10 +40,19 @@ async function del(id) {
   });
 }
 
+async function delByList(data) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/list`,
+    method: 'delete',
+    data,
+  });
+}
+
 export default {
   getList,
   getById,
   save,
   update,
   del,
+  delByList,
 };

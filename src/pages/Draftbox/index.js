@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Pagination, Table } from '@alifd/next';
+import { Button, Dialog, Message, Pagination, Table } from '@alifd/next';
 import DraftApi from '../../api/draft';
 
 export default class DraftBox extends Component {
@@ -14,12 +14,16 @@ export default class DraftBox extends Component {
     };
   }
 
-  componentWillMount() {
+  getData = () => {
     DraftApi.getList()
       .then((resp) => {
         console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
       });
+  };
+
+  componentWillMount() {
+    this.getData();
   }
 
   handlePagination = (current) => {
@@ -53,6 +57,30 @@ export default class DraftBox extends Component {
     return <Link to={`/edit/${draft.id}`}>{draft.subject}</Link>;
   };
 
+  handleDelete = () => {
+    if (this.state.selectedKeys.length === 0) {
+      Message.error('请选择邮件');
+      return;
+    }
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将所选稿件彻底删除吗？这一操作不可恢复',
+      onOk: () => {
+        return new Promise((resolve) => {
+          DraftApi.delByList(this.state.selectedKeys)
+            .then(() => {
+              Message.success('所选稿件已删除');
+              this.getData();
+              this.setState({ selectedKeys: [] });
+            })
+            .then(() => {
+              resolve(true);
+            });
+        });
+      },
+    });
+  };
+
   render() {
     const { dataSource, isLoading } = this.state;
     return (
@@ -63,7 +91,7 @@ export default class DraftBox extends Component {
             <Button type="primary" style={styles.button}>
               刷新
             </Button>
-            <Button type="primary" style={styles.button} warning>
+            <Button type="primary" style={styles.button} warning onClick={this.handleDelete}>
               删除
             </Button>
           </div>

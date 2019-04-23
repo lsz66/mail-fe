@@ -22,7 +22,7 @@ export default class Overview extends Component {
 
   constructor(props) {
     super(props);
-    Message.loading('正在获取邮件信息');
+    Message.loading('正在连接至邮件服务器，请等待下方信息获取成功后再使用');
     UserApi.getOverview()
       .then((resp) => {
         if (resp.data.length === 0) {

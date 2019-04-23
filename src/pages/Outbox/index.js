@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Button, Pagination, Table } from '@alifd/next';
+import { Button, Dialog, Message, Pagination, Table } from '@alifd/next';
 import MailApi from '../../api/mail';
 
 @withRouter
@@ -57,6 +57,30 @@ export default class Outbox extends Component {
     });
   };
 
+  handleDelete = () => {
+    if (this.state.selectedKeys.length === 0) {
+      Message.error('请选择邮件');
+      return;
+    }
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将所选邮件彻底删除吗？这一操作不可恢复',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.del(this.state.selectedKeys, 'outbox')
+            .then(() => {
+              Message.success('所选邮件已删除');
+              this.getData();
+              this.setState({ selectedKeys: [] });
+            })
+            .then(() => {
+              resolve(true);
+            });
+        });
+      },
+    });
+  };
+
   render() {
     const { dataSource, isLoading } = this.state;
     return (
@@ -67,7 +91,7 @@ export default class Outbox extends Component {
             <Button type="primary" style={styles.button} onClick={this.getData}>
               刷新
             </Button>
-            <Button style={styles.button} warning>
+            <Button style={styles.button} warning onClick={this.handleDelete}>
               彻底删除
             </Button>
           </div>

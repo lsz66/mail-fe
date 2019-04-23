@@ -22,6 +22,7 @@
     "@icedesign/img": "^1.x",
     "@icedesign/label": "^1.0.2",
     "@icedesign/layout": "^1.x",
+    "@icedesign/notification": "^1.0.3",
     "@icedesign/theme": "^1.x",
     "bizcharts": "^3.2.2",
     "braft-editor": "^1.9.8",

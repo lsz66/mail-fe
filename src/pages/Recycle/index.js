@@ -66,12 +66,17 @@ export default class Inbox extends Component {
       title: '确定',
       content: '您确定要将所选邮件移回收件箱吗？',
       onOk: () => {
-        MailApi.move(this.state.selectedKeys, 'recycle', 'inbox')
-          .then(() => {
-            Message.success('所选邮件已经移回收件箱');
-            this.getData();
-            this.setState({ selectedKeys: [] });
-          });
+        return new Promise((resolve) => {
+          MailApi.move(this.state.selectedKeys, 'recycle', 'inbox')
+            .then(() => {
+              Message.success('所选邮件已经移回收件箱');
+              this.getData();
+              this.setState({ selectedKeys: [] });
+            })
+            .then(() => {
+              resolve(true);
+            });
+        });
       },
     });
   };
@@ -83,9 +88,9 @@ export default class Inbox extends Component {
     }
     Dialog.confirm({
       title: '确定',
-      content: '您确定要将所选彻底删除吗？这一操作不可恢复',
+      content: '您确定要将所选邮件彻底删除吗？这一操作不可恢复',
       onOk: () => {
-        MailApi.del(this.state.selectedKeys, 'inbox')
+        MailApi.del(this.state.selectedKeys, 'recycle')
           .then(() => {
             Message.success('所选邮件已删除');
             this.getData();

@@ -62,7 +62,7 @@ export default class ContentEditor extends Component {
     Dialog.confirm({
       title: '确定',
       content: '您确定要退出吗？邮件将会被丢弃',
-      onOk: () => this.props.history.push('/inbox'),
+      onOk: () => this.props.history.push('/dashboard'),
     });
   };
 
