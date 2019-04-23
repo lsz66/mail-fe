@@ -49,6 +49,13 @@ async function del(data, box) {
   });
 }
 
+async function search(box, pattern) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/search/${box}/${pattern}`,
+    method: 'get',
+  });
+}
+
 export default {
   getList,
   send,
@@ -56,4 +63,5 @@ export default {
   setSeen,
   move,
   del,
+  search,
 };

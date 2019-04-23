@@ -63,6 +63,13 @@ async function updateInfo(data) {
   });
 }
 
+async function getDateCount() {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/dateCount`,
+    method: 'get',
+  });
+}
+
 export default {
   login,
   register,
@@ -72,4 +79,5 @@ export default {
   getOverview,
   updateName,
   updateInfo,
+  getDateCount,
 };

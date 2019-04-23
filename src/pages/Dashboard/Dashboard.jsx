@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Grid } from '@alifd/next';
 import Overview from './components/Overview';
-import Commits from './components/Commits';
+import Ability from './components/AbilityIntroduction';
 
 const { Row, Col } = Grid;
 
@@ -24,7 +24,7 @@ export default class Dashboard extends Component {
           <Overview />
         </Col>
         <Col l="24">
-          <Commits />
+          <Ability />
         </Col>
       </Row>
     );

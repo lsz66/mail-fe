@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Button, Dialog, Message, Pagination, Table } from '@alifd/next';
+import { Button, Dialog, Icon, Input, Message, Pagination, Table } from '@alifd/next';
+import { FormBinder as IceFormBinder, FormBinderWrapper as IceFormBinderWrapper } from '@icedesign/form-binder';
 import MailApi from '../../api/mail';
 
 @withRouter
@@ -12,6 +13,7 @@ export default class Inbox extends Component {
       dataSource: [],
       selectedKeys: [],
       isLoading: true,
+      value: { search: '' },
     };
   }
 
@@ -125,6 +127,19 @@ export default class Inbox extends Component {
       });
   };
 
+  handleSearch = () => {
+    const search = this.state.value.search;
+    if (search.length === 0) {
+      this.getData();
+    } else {
+      this.setState({ isLoading: true });
+      MailApi.search('inbox', search)
+        .then((resp) => {
+          this.setState({ dataSource: resp.data, isLoading: false });
+        });
+    }
+  };
+
   render() {
     const { dataSource, isLoading } = this.state;
     return (
@@ -144,6 +159,15 @@ export default class Inbox extends Component {
             <Button style={styles.button} warning onClick={this.handleDelete}>
               彻底删除
             </Button>
+            <IceFormBinderWrapper value={this.state.value}>
+              <IceFormBinder name="search">
+                <Input style={{ marginLeft: '10px' }}
+                  onPressEnter={this.handleSearch}
+                  placeholder="全文搜索"
+                />
+              </IceFormBinder>
+            </IceFormBinderWrapper>
+            <Button type="secondary" style={styles.button} onClick={this.handleSearch}><Icon type="search" /></Button>
           </div>
         </div>
         <Table
