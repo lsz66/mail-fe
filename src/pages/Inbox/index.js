@@ -147,7 +147,7 @@ export default class Inbox extends Component {
         <div style={styles.tableFilter}>
           <div style={styles.title}>收件箱</div>
           <div style={styles.filter}>
-            <Button type="primary" style={styles.button} onClick={this.getData}>
+            <Button type="secondary" style={styles.button} onClick={this.getData}>
               刷新
             </Button>
             <Button type="secondary" style={styles.button} onClick={this.handleSeen}>
@@ -156,12 +156,15 @@ export default class Inbox extends Component {
             <Button style={styles.button} onClick={this.handleMoveToRecycle}>
               移到回收站
             </Button>
+            <Button style={styles.button} onClick={this.handleMoveToRecycle}>
+              标为垃圾邮件
+            </Button>
             <Button style={styles.button} warning onClick={this.handleDelete}>
               彻底删除
             </Button>
             <IceFormBinderWrapper value={this.state.value}>
               <IceFormBinder name="search">
-                <Input style={{ marginLeft: '10px' }}
+                <Input style={{ marginLeft: '20px' }}
                   onPressEnter={this.handleSearch}
                   placeholder="全文搜索"
                 />

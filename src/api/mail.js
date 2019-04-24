@@ -41,6 +41,14 @@ async function move(data, src, dest) {
   });
 }
 
+async function moveOne(id, src, dest) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/move/${src}/${dest}`,
+    method: 'put',
+    data: [id],
+  });
+}
+
 async function del(data, box) {
   return axios({
     url: `${BASE_URL}${SERVICE_URL}/delete/${box}`,
@@ -64,4 +72,5 @@ export default {
   move,
   del,
   search,
+  moveOne,
 };
