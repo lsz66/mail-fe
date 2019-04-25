@@ -64,6 +64,14 @@ async function search(box, pattern) {
   });
 }
 
+async function markAs(box, data, type) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/mark/${box}/${type}`,
+    method: 'patch',
+    data,
+  });
+}
+
 export default {
   getList,
   send,
@@ -73,4 +81,5 @@ export default {
   del,
   search,
   moveOne,
+  markAs,
 };

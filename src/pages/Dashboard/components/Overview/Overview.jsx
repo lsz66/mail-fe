@@ -54,43 +54,42 @@ export default class Overview extends Component {
           shape="fusion-reactor"
           tip="正在连接至邮件服务器，请稍等..."
           tipAlign="right"
-        >
-          <ContainerTitle title="总概览" />
-          <IceContainer style={styles.container}>
-            <Row>
-              <Col l="6">
-                <div style={styles.item}>
-                  <img
-                    src="https://gw.alipayobjects.com/zos/rmsportal/heTdoQXAHjxNGiLSUkYA.svg"
-                    alt=""
-                  />
-                </div>
-              </Col>
-              <Col l="6">
-                <div style={styles.item}>
-                  <p style={styles.itemTitle}>新消息</p>
-                  <p style={styles.itemValue}>{unread}</p>
-                </div>
-              </Col>
-              <Col l="6">
-                <div style={styles.item}>
-                  <p style={styles.itemTitle}>收件箱</p>
-                  <p style={styles.itemValue}>{inbox}</p>
-                </div>
-              </Col>
-              <Col l="6">
-                <div style={styles.item}>
-                  <p style={styles.itemTitle}>发件箱</p>
-                  <p style={styles.itemValue}>{outbox}</p>
-                </div>
-              </Col>
-            </Row>
-          </IceContainer>
-          <ContainerTitle title="最近两周收发邮件数" />
-          <IceContainer style={styles.container}>
-            <LineChart cols={cols} data={this.state.chart} axisName="name" />
-          </IceContainer>
-        </Loading>
+        />
+        <ContainerTitle title="总概览" />
+        <IceContainer style={styles.container}>
+          <Row>
+            <Col l="6">
+              <div style={styles.item}>
+                <img
+                  src="https://gw.alipayobjects.com/zos/rmsportal/heTdoQXAHjxNGiLSUkYA.svg"
+                  alt=""
+                />
+              </div>
+            </Col>
+            <Col l="6">
+              <div style={styles.item}>
+                <p style={styles.itemTitle}>新消息</p>
+                <p style={styles.itemValue}>{unread}</p>
+              </div>
+            </Col>
+            <Col l="6">
+              <div style={styles.item}>
+                <p style={styles.itemTitle}>收件箱</p>
+                <p style={styles.itemValue}>{inbox}</p>
+              </div>
+            </Col>
+            <Col l="6">
+              <div style={styles.item}>
+                <p style={styles.itemTitle}>发件箱</p>
+                <p style={styles.itemValue}>{outbox}</p>
+              </div>
+            </Col>
+          </Row>
+        </IceContainer>
+        <ContainerTitle title="最近两周收发邮件数" />
+        <IceContainer style={styles.container}>
+          <LineChart cols={cols} data={this.state.chart} axisName="name" />
+        </IceContainer>
       </div>
     );
   }

@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
 import { withRouter } from 'react-router-dom';
-import { Button, Message } from '@alifd/next';
+import { Button, Dialog, Message } from '@alifd/next';
 import MailApi from '../../api/mail';
 
 @withRouter
 export default class ReadMail extends Component {
   static displayName = 'ReadMail';
 
-  state = {};
+  state = {
+    spamLoading: false,
+    hamLoading: false,
+    showSpamMsg: true,
+  };
 
   constructor(props) {
     super(props);
@@ -18,34 +22,108 @@ export default class ReadMail extends Component {
     MailApi.read(box, id)
       .then((resp) => {
         const { subject, from, to, receiveTime, text, state } = resp.data;
-        this.setState({ subject, from, to, receiveTime, text, state });
+        this.setState({ subject, from, to, receiveTime, text, state, box, id });
       });
   }
 
   handleHam = () => {
-    Message.success('谢谢您的反馈');
-    this.setState({ state: 0 });
+    const { box, id } = this.state;
+    this.setState({ hamLoading: true });
+    MailApi.markAs(box, [id], 'ham')
+      .then(() => {
+        Message.success('谢谢您的反馈');
+        this.setState({ hamLoading: false, showSpamMsg: false });
+      });
+  };
+
+  handleMoveToSpam = () => {
+    const { box, id } = this.state;
+    Dialog.confirm({
+      title: '确定',
+      content: '这封邮件时垃圾邮件吗？',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.move([id], box, 'spam')
+            .then(() => {
+              Message.success('这封邮件已被移到垃圾箱');
+              this.props.history.push('/inbox');
+            })
+            .then(() => {
+              resolve(true);
+            });
+          MailApi.markAs(box, [id], 'spam')
+            .then(() => {
+            });
+        });
+      },
+    });
+  };
+
+  handleMoveToRecycle = () => {
+    const { box, id } = this.state;
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将这封邮件移到回收站吗？',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.move([id], box, 'recycle')
+            .then(() => {
+              Message.success('所选邮件已经移到回收站');
+              this.props.history.push('/inbox');
+            })
+            .then(() => {
+              resolve(true);
+            });
+        });
+      },
+    });
+  };
+
+  handleDelete = () => {
+    const { box, id } = this.state;
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将这封邮件彻底删除吗？这一操作不可恢复',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.del([id], box)
+            .then(() => {
+              Message.success('所选邮件已删除');
+              this.props.history.push('/inbox');
+            })
+            .then(() => {
+              resolve(true);
+            });
+        });
+      },
+    });
   };
 
   handleSpam = () => {
-    Message.success('邮件已移动到垃圾箱');
-    const url = location.hash.substring(7).split('/');
-    const id = url[1];
-    MailApi.moveOne(id, 'inbox', 'spam')
+    const { box, id } = this.state;
+    this.setState({ spamLoading: true });
+    MailApi.move([id], box, 'spam')
+      .then(() => {
+        Message.success('邮件已移动到垃圾箱');
+        this.props.history.push('/inbox');
+      })
+      .catch(() => {
+        Message.error('服务器出错');
+        this.setState({ spamLoading: false });
+      });
+    MailApi.markAs(box, [id], 'spam')
       .then(() => {
       });
-    this.props.history.push('/inbox');
-    this.setState({ state: 0 });
   };
 
   render() {
-    const { subject, from, to, receiveTime, text, state } = this.state;
+    const { subject, from, to, receiveTime, text, state, spamLoading, hamLoading, showSpamMsg } = this.state;
     const spamMsg = (
       <Message key="spam" title="温馨提示" type="warning" size="large">
         <h3>这封邮件看起来像是垃圾邮件。</h3>
         <div style={{ textAlign: 'right' }}>
-          <Button warning size="small" onClick={this.handleSpam}>这是垃圾邮件，请帮我移到垃圾箱</Button>
-          <Button type="secondary" style={{ marginLeft: '20px' }} size="small" onClick={this.handleHam}>这不是垃圾邮件</Button>
+          <Button warning size="small" onClick={this.handleSpam} loading={spamLoading}>这是垃圾邮件，请帮我移到垃圾箱</Button>
+          <Button type="secondary" style={{ marginLeft: '20px' }} size="small" onClick={this.handleHam} loading={hamLoading}>这不是垃圾邮件</Button>
         </div>
       </Message>);
     return (
@@ -77,7 +155,7 @@ export default class ReadMail extends Component {
                 <Button style={styles.button} onClick={this.handleMoveToRecycle} size="small">
                   移到回收站
                 </Button>
-                <Button style={styles.button} onClick={this.handleMoveToRecycle} size="small">
+                <Button style={styles.button} onClick={this.handleMoveToSpam} size="small">
                   标为垃圾邮件
                 </Button>
                 <Button style={styles.button} warning onClick={this.handleDelete} size="small">
@@ -89,7 +167,7 @@ export default class ReadMail extends Component {
         </IceContainer>
         <IceContainer title="正文">
           <hr />
-          { state === 1 ? spamMsg : ''}
+          { state === 1 && showSpamMsg ? spamMsg : ''}
           <div style={styles.textBody} dangerouslySetInnerHTML={{ __html: text }} />
         </IceContainer>
       </div>
