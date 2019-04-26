@@ -21,14 +21,14 @@ async function register(data) {
 
 async function getBanner() {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getBanner`,
+    url: `${BASE_URL}${SERVICE_URL}/banner`,
     method: 'get',
   });
 }
 
 async function getName() {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getName`,
+    url: `${BASE_URL}${SERVICE_URL}/name`,
     method: 'get',
   });
 }
@@ -49,15 +49,15 @@ async function getOverview() {
 
 async function updateName(params) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/updateName`,
-    method: 'put',
+    url: `${BASE_URL}${SERVICE_URL}`,
+    method: 'patch',
     params,
   });
 }
 
 async function updateInfo(data) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/updateInfo`,
+    url: `${BASE_URL}${SERVICE_URL}`,
     method: 'put',
     data,
   });

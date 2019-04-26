@@ -5,7 +5,7 @@ const SERVICE_URL = '/mail';
 
 async function getList(box) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getList/${box}`,
+    url: `${BASE_URL}${SERVICE_URL}/list/${box}`,
     method: 'get',
   });
 }
@@ -20,7 +20,7 @@ async function send(data) {
 
 async function read(box, id) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getMsg/${box}/${id}`,
+    url: `${BASE_URL}${SERVICE_URL}/msg/${box}/${id}`,
     method: 'get',
   });
 }
@@ -35,23 +35,15 @@ async function setSeen(data) {
 
 async function move(data, src, dest) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/move/${src}/${dest}`,
+    url: `${BASE_URL}${SERVICE_URL}/${src}/${dest}`,
     method: 'put',
     data,
   });
 }
 
-async function moveOne(id, src, dest) {
-  return axios({
-    url: `${BASE_URL}${SERVICE_URL}/move/${src}/${dest}`,
-    method: 'put',
-    data: [id],
-  });
-}
-
 async function del(data, box) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/delete/${box}`,
+    url: `${BASE_URL}${SERVICE_URL}/${box}`,
     method: 'delete',
     data,
   });
@@ -59,14 +51,14 @@ async function del(data, box) {
 
 async function search(box, pattern) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/search/${box}/${pattern}`,
+    url: `${BASE_URL}${SERVICE_URL}/listCond/${box}/${pattern}`,
     method: 'get',
   });
 }
 
 async function markAs(box, data, type) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/mark/${box}/${type}`,
+    url: `${BASE_URL}${SERVICE_URL}/${box}/${type}`,
     method: 'patch',
     data,
   });
@@ -80,6 +72,5 @@ export default {
   move,
   del,
   search,
-  moveOne,
   markAs,
 };

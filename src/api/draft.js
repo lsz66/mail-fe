@@ -5,14 +5,14 @@ const SERVICE_URL = '/draft';
 
 async function getList() {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getList`,
+    url: `${BASE_URL}${SERVICE_URL}/list`,
     method: 'get',
   });
 }
 
 async function getById(params) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/getById/${params}`,
+    url: `${BASE_URL}${SERVICE_URL}/${params}`,
     method: 'get',
   });
 }

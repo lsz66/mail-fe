@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Balloon, Button, Icon, Pagination, Table } from '@alifd/next';
+import { Link, withRouter } from 'react-router-dom';
+import { Button, Dialog, Message, Pagination, Table } from '@alifd/next';
 import MailApi from '../../api/mail';
 
-export default class SpamBox extends Component {
+@withRouter
+export default class Inbox extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -13,12 +15,16 @@ export default class SpamBox extends Component {
     };
   }
 
-  componentWillMount() {
+  getData = () => {
+    this.setState({ isLoading: true });
     MailApi.getList('spam')
       .then((resp) => {
-        console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
       });
+  };
+
+  componentWillMount() {
+    this.getData();
   }
 
   handlePagination = (current) => {
@@ -41,41 +47,58 @@ export default class SpamBox extends Component {
     });
   };
 
-  renderCatrgory = (value) => {
-    return (
-      <Balloon
-        align="lt"
-        trigger={<div style={{ margin: '5px' }}>{value}</div>}
-        closable={false}
-        style={{ lineHeight: '24px' }}
-      >
-        皮肤科属于外科，主要治疗各种皮肤病，常见皮肤病有牛皮癣 、 疱疹
-        、酒渣鼻等
-      </Balloon>
-    );
-  };
-
-  renderState = (value) => {
-    return (
-      <div style={styles.state}>
-        <span style={styles.circle} />
-        <span style={styles.stateText}>{value}</span>
-      </div>
-    );
-  };
-
-  renderOper = () => {
-    return (
-      <div style={styles.oper}>
-        <Icon type="edit" size="small" style={styles.editIcon} />
-      </div>
-    );
-  };
-
   onRowChange = (selectedKeys) => {
-    console.log(selectedKeys);
     this.setState({
       selectedKeys,
+    });
+  };
+
+  renderOpenMail = (id, index, mail) => {
+    return <Link to={`/read/spam/${mail.id}`}>{mail.subject}</Link>;
+  };
+
+  handleDelete = () => {
+    if (this.state.selectedKeys.length === 0) {
+      Message.error('请选择邮件');
+      return;
+    }
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将所选邮件彻底删除吗？这一操作不可恢复',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.del(this.state.selectedKeys, 'inbox')
+            .then(() => {
+              Message.success('所选邮件已删除');
+              this.getData();
+              this.setState({ selectedKeys: [] });
+            })
+            .then(() => {
+              resolve(true);
+            });
+        });
+      },
+    });
+  };
+
+  handleMarkAsHam = () => {
+    Dialog.confirm({
+      title: '确定',
+      content: '确定要把这些邮件标记为正常邮件吗？',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.move(this.state.selectedKeys, 'spam', 'inbox')
+            .then(() => {
+              Message.success('这些邮件已被移回收件箱');
+              this.getData();
+            })
+            .then(() => {
+              resolve(true);
+            });
+          MailApi.markAs('spam', this.state.selectedKeys, 'ham')
+            .then();
+        });
+      },
     });
   };
 
@@ -86,14 +109,11 @@ export default class SpamBox extends Component {
         <div style={styles.tableFilter}>
           <div style={styles.title}>垃圾箱</div>
           <div style={styles.filter}>
-            <Button type="primary" style={styles.button}>
-              刷新
-            </Button>
-            <Button type="primary" style={styles.button} warning>
-              删除
-            </Button>
-            <Button type="primary" style={styles.button}>
+            <Button style={styles.button} onClick={this.handleMarkAsHam}>
               标为普通邮件
+            </Button>
+            <Button style={styles.button} warning onClick={this.handleDelete}>
+              彻底删除
             </Button>
           </div>
         </div>
@@ -107,16 +127,17 @@ export default class SpamBox extends Component {
             selectedRowKeys: this.state.selectedKeys,
             onChange: this.onRowChange,
           }}
+          primaryKey="id"
         >
           <Table.Column width={250} title="发件人" dataIndex="from" />
-          <Table.Column width={600} title="主题" dataIndex="subject" />
+          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
           <Table.Column width={200} title="接收时间" dataIndex="receiveTime" />
-          <Table.Column width={200} title="阅读时间" dataIndex="readTime" />
         </Table>
         <Pagination
           style={styles.pagination}
           current={this.state.current}
           onChange={this.handlePagination}
+          total={1}
         />
       </div>
     );
@@ -138,14 +159,10 @@ const styles = {
   },
   circle: {
     display: 'inline-block',
-    background: '#28a745',
     width: '8px',
     height: '8px',
     borderRadius: '50px',
     marginRight: '4px',
-  },
-  stateText: {
-    color: '#28a745',
   },
   tableFilter: {
     display: 'flex',

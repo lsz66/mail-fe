@@ -40,7 +40,7 @@ export default class ReadMail extends Component {
     const { box, id } = this.state;
     Dialog.confirm({
       title: '确定',
-      content: '这封邮件时垃圾邮件吗？',
+      content: '这封邮件是垃圾邮件吗？',
       onOk: () => {
         return new Promise((resolve) => {
           MailApi.move([id], box, 'spam')
