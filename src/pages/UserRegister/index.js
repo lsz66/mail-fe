@@ -22,6 +22,7 @@ class UserRegister extends Component {
         password: '',
         re: '',
       },
+      isLoading: false,
     };
   }
 
@@ -80,6 +81,7 @@ class UserRegister extends Component {
       if (errors) {
         return;
       }
+      this.setState({ isLoading: true });
       UserApi.register(values)
         .then((resp) => {
           if (resp.data) {
@@ -88,6 +90,7 @@ class UserRegister extends Component {
           } else {
             Message.error('用户名已存在，请换个用户名再试');
           }
+          this.setState({ isLoading: false });
         });
     });
   };
@@ -163,6 +166,7 @@ class UserRegister extends Component {
                 onClick={this.handleSubmit}
                 style={styles.submitBtn}
                 size="large"
+                isLoading={this.state.isLoading}
               >
                 注 册
               </Button>
