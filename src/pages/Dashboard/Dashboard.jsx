@@ -8,25 +8,18 @@ const { Row, Col } = Grid;
 export default class Dashboard extends Component {
   static displayName = 'Dashboard';
 
-  static propTypes = {};
-
-  static defaultProps = {};
-
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
   render() {
     return (
-      <Row gutter="20" wrap>
-        <Col l="24">
-          <Overview />
-        </Col>
-        <Col l="24">
-          <Ability />
-        </Col>
-      </Row>
+      <div>
+        <Row gutter="20" wrap>
+          <Col l="24">
+            <Overview />
+          </Col>
+          <Col l="24">
+            <Ability />
+          </Col>
+        </Row>
+      </div>
     );
   }
 }

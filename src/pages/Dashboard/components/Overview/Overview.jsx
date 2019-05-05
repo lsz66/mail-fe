@@ -52,8 +52,7 @@ export default class Overview extends Component {
         <Loading visible={this.state.loading}
           fullScreen
           shape="fusion-reactor"
-          tip="正在连接至邮件服务器，请稍等..."
-          tipAlign="right"
+          tip="正在连接至服务器并获取邮件信息，请稍等..."
         />
         <ContainerTitle title="总概览" />
         <IceContainer style={styles.container}>

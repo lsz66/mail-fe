@@ -24,6 +24,9 @@ export default class ReadMail extends Component {
         const { subject, from, to, receiveTime, text, state } = resp.data;
         this.setState({ subject, from, to, receiveTime, text, state, box, id });
       });
+    if (box !== 'inbox') {
+      this.setState({ showSpamMsg: false });
+    }
   }
 
   handleHam = () => {
@@ -79,6 +82,47 @@ export default class ReadMail extends Component {
     });
   };
 
+  handleMoveToInbox = () => {
+    const { box, id } = this.state;
+    Dialog.confirm({
+      title: '确定',
+      content: '您确定要将这封邮件移回收件箱吗？',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.move([id], box, 'inbox')
+            .then(() => {
+              Message.success('所选邮件已经移回收件箱');
+              this.props.history.push('/inbox');
+            })
+            .then(() => {
+              resolve(true);
+            });
+        });
+      },
+    });
+  };
+
+  handleMoveToHam = () => {
+    const { box, id } = this.state;
+    Dialog.confirm({
+      title: '确定',
+      content: '这封邮件是普通邮件吗，如果是，该邮件将移回收件箱？',
+      onOk: () => {
+        return new Promise((resolve) => {
+          MailApi.move([id], box, 'inbox')
+            .then(() => {
+              Message.success('此已经移回收件箱');
+            })
+            .then(() => {
+              resolve(true);
+            });
+          MailApi.markAs(box, [id], 'ham')
+            .then();
+        });
+      },
+    });
+  };
+
   handleDelete = () => {
     const { box, id } = this.state;
     Dialog.confirm({
@@ -89,7 +133,7 @@ export default class ReadMail extends Component {
           MailApi.del([id], box)
             .then(() => {
               Message.success('所选邮件已删除');
-              this.props.history.push('/inbox');
+              this.props.history.push(`/${box}`);
             })
             .then(() => {
               resolve(true);
@@ -117,7 +161,7 @@ export default class ReadMail extends Component {
   };
 
   render() {
-    const { subject, from, to, receiveTime, text, state, spamLoading, hamLoading, showSpamMsg } = this.state;
+    const { subject, from, to, receiveTime, text, state, spamLoading, hamLoading, showSpamMsg, box } = this.state;
     const spamMsg = (
       <Message key="spam" title="温馨提示" type="warning" size="large">
         <h3>这封邮件看起来像是垃圾邮件。</h3>
@@ -125,7 +169,83 @@ export default class ReadMail extends Component {
           <Button warning size="small" onClick={this.handleSpam} loading={spamLoading}>这是垃圾邮件，请帮我移到垃圾箱</Button>
           <Button type="secondary" style={{ marginLeft: '20px' }} size="small" onClick={this.handleHam} loading={hamLoading}>这不是垃圾邮件</Button>
         </div>
-      </Message>);
+      </Message>
+    );
+    const inboxOperator = (
+      <li style={styles.detailItem}>
+        <div style={styles.detailTitle}>操作</div>
+        <div style={styles.detailBody}>
+          <Button type="secondary" style={styles.button} onClick={this.getData} size="small">
+            回复
+          </Button>
+          <Button style={styles.button} onClick={this.handleMoveToRecycle} size="small">
+            移到回收站
+          </Button>
+          <Button style={styles.button} onClick={this.handleMoveToSpam} size="small">
+            标为垃圾邮件
+          </Button>
+          <Button style={styles.button} warning onClick={this.handleDelete} size="small">
+            彻底删除
+          </Button>
+        </div>
+      </li>
+    );
+    const outboxOperator = (
+      <li style={styles.detailItem}>
+        <div style={styles.detailTitle}>操作</div>
+        <div style={styles.detailBody}>
+          <Button type="secondary" style={styles.button} onClick={this.getData} size="small">
+            再次发送
+          </Button>
+          <Button style={styles.button} warning onClick={this.handleDelete} size="small">
+            彻底删除
+          </Button>
+        </div>
+      </li>
+    );
+    const recycleOperator = (
+      <li style={styles.detailItem}>
+        <div style={styles.detailTitle}>操作</div>
+        <div style={styles.detailBody}>
+          <Button type="secondary" style={styles.button} onClick={this.handleMoveToInbox} size="small">
+            恢复到收件箱
+          </Button>
+          <Button style={styles.button} warning onClick={this.handleDelete} size="small">
+            彻底删除
+          </Button>
+        </div>
+      </li>
+    );
+    const spamOperator = (
+      <li style={styles.detailItem}>
+        <div style={styles.detailTitle}>操作</div>
+        <div style={styles.detailBody}>
+          <Button type="secondary" style={styles.button} onClick={this.handleMoveToHam} size="small">
+            标记为普通邮件
+          </Button>
+          <Button style={styles.button} warning onClick={this.handleDelete} size="small">
+            彻底删除
+          </Button>
+        </div>
+      </li>
+    );
+    let operator;
+    switch (box) {
+      case 'inbox':
+        operator = inboxOperator;
+        break;
+      case 'outbox':
+        operator = outboxOperator;
+        break;
+      case 'spam':
+        operator = spamOperator;
+        break;
+      case 'recycle':
+        operator = recycleOperator;
+        break;
+      default:
+        operator = '';
+    }
     return (
       <div className="detail-table">
         <IceContainer title="邮件详情">
@@ -146,28 +266,12 @@ export default class ReadMail extends Component {
               <div style={styles.detailTitle}>主题</div>
               <div style={styles.detailBody}>{subject}</div>
             </li>
-            <li style={styles.detailItem}>
-              <div style={styles.detailTitle}>操作</div>
-              <div style={styles.detailBody}>
-                <Button type="secondary" style={styles.button} onClick={this.getData} size="small">
-                  回复
-                </Button>
-                <Button style={styles.button} onClick={this.handleMoveToRecycle} size="small">
-                  移到回收站
-                </Button>
-                <Button style={styles.button} onClick={this.handleMoveToSpam} size="small">
-                  标为垃圾邮件
-                </Button>
-                <Button style={styles.button} warning onClick={this.handleDelete} size="small">
-                  彻底删除
-                </Button>
-              </div>
-            </li>
+            {operator}
           </ul>
         </IceContainer>
         <IceContainer title="正文">
           <hr />
-          { state === 1 && showSpamMsg ? spamMsg : ''}
+          {state === 1 && showSpamMsg ? spamMsg : ''}
           <div style={styles.textBody} dangerouslySetInnerHTML={{ __html: text }} />
         </IceContainer>
       </div>

@@ -5,23 +5,27 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Outbox extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      current: 1,
-      dataSource: [],
-      selectedKeys: [],
-      isLoading: true,
-    };
-  }
+
+  state = {
+    current: 1,
+    dataSource: [],
+    selectedKeys: [],
+    total: 0,
+    isLoading: true,
+  };
 
   componentWillMount() {
-    this.getData();
+    MailApi.getTotalCount('outbox')
+      .then((resp) => {
+        const total = resp.data;
+        this.getData(1, total);
+        this.setState({ total });
+      });
   }
 
-  getData = () => {
+  getData = (pageNo, total) => {
     this.setState({ isLoading: true });
-    MailApi.getList('outbox')
+    MailApi.getList('outbox', pageNo, total)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
@@ -31,6 +35,7 @@ export default class Outbox extends Component {
     this.setState({
       current,
     });
+    this.getData(current, this.state.total);
   };
 
   handleSort = (dataIndex, order) => {
@@ -82,15 +87,12 @@ export default class Outbox extends Component {
   };
 
   render() {
-    const { dataSource, isLoading } = this.state;
+    const { dataSource, isLoading, total } = this.state;
     return (
       <div style={styles.tableContainer}>
         <div style={styles.tableFilter}>
           <div style={styles.title}>发件箱</div>
           <div style={styles.filter}>
-            <Button type="primary" style={styles.button} onClick={this.getData}>
-              刷新
-            </Button>
             <Button style={styles.button} warning onClick={this.handleDelete}>
               彻底删除
             </Button>
@@ -115,6 +117,7 @@ export default class Outbox extends Component {
           style={styles.pagination}
           current={this.state.current}
           onChange={this.handlePagination}
+          total={total}
         />
       </div>
     );

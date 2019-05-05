@@ -6,47 +6,42 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Inbox extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      current: 1,
-      dataSource: [],
-      selectedKeys: [],
-      isLoading: true,
-      value: { search: '' },
-    };
-  }
 
-  getData = () => {
+  state = {
+    current: 1,
+    dataSource: [],
+    selectedKeys: [],
+    isLoading: true,
+    total: 0,
+    value: { search: '' },
+  };
+
+  getData = (pageNo, total) => {
     this.setState({ isLoading: true });
-    MailApi.getList('inbox')
+    MailApi.getList('inbox', pageNo, total)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
   };
 
   componentWillMount() {
-    this.getData();
+    this.handleReceive(1);
   }
+
+  handleReceive = (pageNo) => {
+    MailApi.getTotalCount('inbox')
+      .then((resp) => {
+        const total = resp.data;
+        this.setState({ total });
+        this.getData(pageNo, total);
+      });
+  };
 
   handlePagination = (current) => {
     this.setState({
       current,
     });
-  };
-
-  handleSort = (dataIndex, order) => {
-    const dataSource = this.state.dataSource.sort((a, b) => {
-      const result = a[dataIndex] - b[dataIndex];
-      if (order === 'asc') {
-        return result > 0 ? 1 : -1;
-      }
-      return result > 0 ? -1 : 1;
-    });
-
-    this.setState({
-      dataSource,
-    });
+    this.getData(current, this.state.total);
   };
 
   renderState = (value) => {
@@ -162,13 +157,13 @@ export default class Inbox extends Component {
   };
 
   render() {
-    const { dataSource, isLoading } = this.state;
+    const { dataSource, isLoading, total } = this.state;
     return (
       <div style={styles.tableContainer}>
         <div style={styles.tableFilter}>
           <div style={styles.title}>收件箱</div>
           <div style={styles.filter}>
-            <Button type="secondary" style={styles.button} onClick={this.getData}>
+            <Button type="secondary" style={styles.button} onClick={() => this.handleReceive(1)}>
               刷新
             </Button>
             <Button type="secondary" style={styles.button} onClick={this.handleSeen}>
@@ -186,12 +181,12 @@ export default class Inbox extends Component {
             <IceFormBinderWrapper value={this.state.value}>
               <IceFormBinder name="search">
                 <Input style={{ marginLeft: '20px' }}
-                  onPressEnter={this.handleSearch}
-                  placeholder="全文搜索"
+                       onPressEnter={this.handleSearch}
+                       placeholder="全文搜索"
                 />
               </IceFormBinder>
             </IceFormBinderWrapper>
-            <Button type="secondary" style={styles.button} onClick={this.handleSearch}><Icon type="search" /></Button>
+            <Button type="secondary" style={styles.button} onClick={this.handleSearch}><Icon type="search"/></Button>
           </div>
         </div>
         <Table
@@ -206,16 +201,16 @@ export default class Inbox extends Component {
           }}
           primaryKey="id"
         >
-          <Table.Column width={250} title="发件人" dataIndex="from" />
-          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
-          <Table.Column width={200} title="接收时间" dataIndex="receiveTime" />
-          <Table.Column width={100} title="状态" dataIndex="state" cell={this.renderState} />
+          <Table.Column width={250} title="发件人" dataIndex="from"/>
+          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail}/>
+          <Table.Column width={200} title="接收时间" dataIndex="receiveTime"/>
+          <Table.Column width={100} title="状态" dataIndex="state" cell={this.renderState}/>
         </Table>
         <Pagination
           style={styles.pagination}
           current={this.state.current}
           onChange={this.handlePagination}
-          total={1}
+          total={total}
         />
       </div>
     );

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Dialog, Message, Pagination, Table } from '@alifd/next';
+import { Button, Dialog, Message, Table } from '@alifd/next';
 import DraftApi from '../../api/draft';
 
 export default class DraftBox extends Component {
@@ -25,26 +25,6 @@ export default class DraftBox extends Component {
   componentWillMount() {
     this.getData();
   }
-
-  handlePagination = (current) => {
-    this.setState({
-      current,
-    });
-  };
-
-  handleSort = (dataIndex, order) => {
-    const dataSource = this.state.dataSource.sort((a, b) => {
-      const result = a[dataIndex] - b[dataIndex];
-      if (order === 'asc') {
-        return result > 0 ? 1 : -1;
-      }
-      return result > 0 ? -1 : 1;
-    });
-
-    this.setState({
-      dataSource,
-    });
-  };
 
   onRowChange = (selectedKeys) => {
     console.log(selectedKeys);
@@ -111,11 +91,6 @@ export default class DraftBox extends Component {
           <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
           <Table.Column width={200} title="保存时间" dataIndex="lastModifyTime" />
         </Table>
-        <Pagination
-          style={styles.pagination}
-          current={this.state.current}
-          onChange={this.handlePagination}
-        />
       </div>
     );
   }

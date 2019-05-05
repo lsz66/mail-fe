@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import BraftEditor from 'braft-editor';
 import { withRouter } from 'react-router-dom';
 import 'braft-editor/dist/braft.css';
 import IceContainer from '@icedesign/container';
@@ -91,6 +90,10 @@ export default class ContentEditor extends Component {
   };
 
   render() {
+    let BraftEditor;
+    import('braft-editor').then((module) => {
+      BraftEditor = module;
+    });
     return (
       <div className="content-editor">
         <IceFormBinderWrapper

@@ -3,9 +3,16 @@ import BASE_URL from './index';
 
 const SERVICE_URL = '/mail';
 
-async function getList(box) {
+async function getTotalCount(box) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/list/${box}`,
+    url: `${BASE_URL}${SERVICE_URL}/count/${box}`,
+    method: 'get',
+  });
+}
+
+async function getList(box, pageNo, total) {
+  return axios({
+    url: `${BASE_URL}${SERVICE_URL}/list/${box}/${pageNo}/${total}`,
     method: 'get',
   });
 }
@@ -65,6 +72,7 @@ async function markAs(box, data, type) {
 }
 
 export default {
+  getTotalCount,
   getList,
   send,
   read,

@@ -5,46 +5,37 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Inbox extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      current: 1,
-      dataSource: [],
-      selectedKeys: [],
-      isLoading: true,
-    };
-  }
 
-  getData = () => {
+  state = {
+    current: 1,
+    total: 0,
+    dataSource: [],
+    selectedKeys: [],
+    isLoading: true,
+  };
+
+  getData = (pageNo, total) => {
     this.setState({ isLoading: true });
-    MailApi.getList('spam')
+    MailApi.getList('spam', pageNo, total)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
   };
 
   componentWillMount() {
-    this.getData();
+    MailApi.getTotalCount('spam')
+      .then((resp) => {
+        const total = resp.data;
+        this.getData(1, total);
+        this.setState({ total });
+      });
   }
 
   handlePagination = (current) => {
     this.setState({
       current,
     });
-  };
-
-  handleSort = (dataIndex, order) => {
-    const dataSource = this.state.dataSource.sort((a, b) => {
-      const result = a[dataIndex] - b[dataIndex];
-      if (order === 'asc') {
-        return result > 0 ? 1 : -1;
-      }
-      return result > 0 ? -1 : 1;
-    });
-
-    this.setState({
-      dataSource,
-    });
+    this.getData(current, this.state.total);
   };
 
   onRowChange = (selectedKeys) => {
@@ -103,7 +94,7 @@ export default class Inbox extends Component {
   };
 
   render() {
-    const { dataSource, isLoading } = this.state;
+    const { dataSource, isLoading, total } = this.state;
     return (
       <div style={styles.tableContainer}>
         <div style={styles.tableFilter}>
@@ -137,7 +128,7 @@ export default class Inbox extends Component {
           style={styles.pagination}
           current={this.state.current}
           onChange={this.handlePagination}
-          total={1}
+          total={total}
         />
       </div>
     );

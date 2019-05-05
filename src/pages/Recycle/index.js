@@ -5,32 +5,37 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Inbox extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      current: 1,
-      dataSource: [],
-      selectedKeys: [],
-      isLoading: true,
-    };
-  }
 
-  getData = () => {
+  state = {
+    current: 1,
+    total: 0,
+    dataSource: [],
+    selectedKeys: [],
+    isLoading: true,
+  };
+
+  getData = (pageNo, total) => {
     this.setState({ isLoading: true });
-    MailApi.getList('recycle')
+    MailApi.getList('recycle', pageNo, total)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
   };
 
   componentWillMount() {
-    this.getData();
+    MailApi.getTotalCount('recycle')
+      .then((resp) => {
+        const total = resp.data;
+        this.getData(1, total);
+        this.setState({ total });
+      });
   }
 
   handlePagination = (current) => {
     this.setState({
       current,
     });
+    this.getData(current, this.state.total);
   };
 
   handleSort = (dataIndex, order) => {
@@ -101,7 +106,7 @@ export default class Inbox extends Component {
   };
 
   render() {
-    const { dataSource, isLoading } = this.state;
+    const { dataSource, isLoading, total } = this.state;
     return (
       <div style={styles.tableContainer}>
         <div style={styles.tableFilter}>
@@ -135,7 +140,7 @@ export default class Inbox extends Component {
           style={styles.pagination}
           current={this.state.current}
           onChange={this.handlePagination}
-          total={1}
+          total={total}
         />
       </div>
     );
