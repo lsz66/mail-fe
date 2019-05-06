@@ -5,7 +5,6 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Inbox extends Component {
-
   state = {
     current: 1,
     total: 0,
@@ -14,9 +13,9 @@ export default class Inbox extends Component {
     isLoading: true,
   };
 
-  getData = (pageNo, total) => {
+  getData = (pageNo) => {
     this.setState({ isLoading: true });
-    MailApi.getList('recycle', pageNo, total)
+    MailApi.getList('recycle', pageNo)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
@@ -25,9 +24,8 @@ export default class Inbox extends Component {
   componentWillMount() {
     MailApi.getTotalCount('recycle')
       .then((resp) => {
-        const total = resp.data;
-        this.getData(1, total);
-        this.setState({ total });
+        this.getData(1);
+        this.setState({ total: resp.data });
       });
   }
 
@@ -35,7 +33,7 @@ export default class Inbox extends Component {
     this.setState({
       current,
     });
-    this.getData(current, this.state.total);
+    this.getData(current);
   };
 
   handleSort = (dataIndex, order) => {
@@ -75,7 +73,11 @@ export default class Inbox extends Component {
           MailApi.move(this.state.selectedKeys, 'recycle', 'inbox')
             .then(() => {
               Message.success('所选邮件已经移回收件箱');
-              this.getData();
+              MailApi.getTotalCount('recycle')
+                .then((resp) => {
+                  this.setState({ total: resp.data });
+                  this.getData(this.state.current);
+                });
               this.setState({ selectedKeys: [] });
             })
             .then(() => {
@@ -98,7 +100,19 @@ export default class Inbox extends Component {
         MailApi.del(this.state.selectedKeys, 'recycle')
           .then(() => {
             Message.success('所选邮件已删除');
-            this.getData();
+            MailApi.getTotalCount('recycle')
+              .then((resp) => {
+                this.setState({ total: resp.data });
+                const { total, current } = this.state;
+                if ((total % 10 === 0) && total / 10 < current) {
+                  this.setState((prev) => {
+                    return {
+                      total: prev.total - 1,
+                    };
+                  });
+                }
+                this.getData(this.state.current);
+              });
             this.setState({ selectedKeys: [] });
           });
       },

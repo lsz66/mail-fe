@@ -6,7 +6,6 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Inbox extends Component {
-
   state = {
     current: 1,
     dataSource: [],
@@ -16,9 +15,9 @@ export default class Inbox extends Component {
     value: { search: '' },
   };
 
-  getData = (pageNo, total) => {
+  getData = (pageNo) => {
     this.setState({ isLoading: true });
-    MailApi.getList('inbox', pageNo, total)
+    MailApi.getList('inbox', pageNo)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
@@ -31,9 +30,8 @@ export default class Inbox extends Component {
   handleReceive = (pageNo) => {
     MailApi.getTotalCount('inbox')
       .then((resp) => {
-        const total = resp.data;
-        this.setState({ total });
-        this.getData(pageNo, total);
+        this.setState({ total: resp.data });
+        this.getData(pageNo);
       });
   };
 
@@ -41,7 +39,7 @@ export default class Inbox extends Component {
     this.setState({
       current,
     });
-    this.getData(current, this.state.total);
+    this.getData(current);
   };
 
   renderState = (value) => {
@@ -78,7 +76,7 @@ export default class Inbox extends Component {
           MailApi.move(this.state.selectedKeys, 'inbox', 'recycle')
             .then(() => {
               Message.success('所选邮件已经移到回收站');
-              this.getData();
+              this.handleReceive(this.state.current);
               this.setState({ selectedKeys: [] });
             })
             .then(() => {
@@ -102,7 +100,7 @@ export default class Inbox extends Component {
           MailApi.del(this.state.selectedKeys, 'inbox')
             .then(() => {
               Message.success('所选邮件已删除');
-              this.getData();
+              this.handleReceive(this.state.current);
               this.setState({ selectedKeys: [] });
             })
             .then(() => {
@@ -117,7 +115,7 @@ export default class Inbox extends Component {
     MailApi.setSeen(this.state.selectedKeys)
       .then(() => {
         Message.success('设置成功');
-        this.getData();
+        this.handleReceive(this.state.current);
         this.setState({ selectedKeys: [] });
       });
   };
@@ -125,7 +123,7 @@ export default class Inbox extends Component {
   handleSearch = () => {
     const search = this.state.value.search;
     if (search.length === 0) {
-      this.getData();
+      this.handleReceive(this.state.current);
     } else {
       this.setState({ isLoading: true });
       MailApi.search('inbox', search)
@@ -144,7 +142,8 @@ export default class Inbox extends Component {
           MailApi.move(this.state.selectedKeys, 'inbox', 'spam')
             .then(() => {
               Message.success('这些邮件已被移到垃圾箱');
-              this.getData();
+              this.handleReceive(this.state.current);
+              this.setState({ selectedKeys: [] });
             })
             .then(() => {
               resolve(true);
@@ -181,12 +180,12 @@ export default class Inbox extends Component {
             <IceFormBinderWrapper value={this.state.value}>
               <IceFormBinder name="search">
                 <Input style={{ marginLeft: '20px' }}
-                       onPressEnter={this.handleSearch}
-                       placeholder="全文搜索"
+                  onPressEnter={this.handleSearch}
+                  placeholder="全文搜索"
                 />
               </IceFormBinder>
             </IceFormBinderWrapper>
-            <Button type="secondary" style={styles.button} onClick={this.handleSearch}><Icon type="search"/></Button>
+            <Button type="secondary" style={styles.button} onClick={this.handleSearch}><Icon type="search" /></Button>
           </div>
         </div>
         <Table
@@ -201,10 +200,10 @@ export default class Inbox extends Component {
           }}
           primaryKey="id"
         >
-          <Table.Column width={250} title="发件人" dataIndex="from"/>
-          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail}/>
-          <Table.Column width={200} title="接收时间" dataIndex="receiveTime"/>
-          <Table.Column width={100} title="状态" dataIndex="state" cell={this.renderState}/>
+          <Table.Column width={250} title="发件人" dataIndex="from" />
+          <Table.Column width={600} title="主题" dataIndex="subject" cell={this.renderOpenMail} />
+          <Table.Column width={200} title="接收时间" dataIndex="receiveTime" />
+          <Table.Column width={100} title="状态" dataIndex="state" cell={this.renderState} />
         </Table>
         <Pagination
           style={styles.pagination}

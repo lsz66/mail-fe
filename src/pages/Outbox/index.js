@@ -5,7 +5,6 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Outbox extends Component {
-
   state = {
     current: 1,
     dataSource: [],
@@ -17,15 +16,14 @@ export default class Outbox extends Component {
   componentWillMount() {
     MailApi.getTotalCount('outbox')
       .then((resp) => {
-        const total = resp.data;
-        this.getData(1, total);
-        this.setState({ total });
+        this.getData(1);
+        this.setState({ total: resp.data });
       });
   }
 
-  getData = (pageNo, total) => {
+  getData = (pageNo) => {
     this.setState({ isLoading: true });
-    MailApi.getList('outbox', pageNo, total)
+    MailApi.getList('outbox', pageNo)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
@@ -35,7 +33,7 @@ export default class Outbox extends Component {
     this.setState({
       current,
     });
-    this.getData(current, this.state.total);
+    this.getData(current);
   };
 
   handleSort = (dataIndex, order) => {
@@ -75,7 +73,19 @@ export default class Outbox extends Component {
           MailApi.del(this.state.selectedKeys, 'outbox')
             .then(() => {
               Message.success('所选邮件已删除');
-              this.getData();
+              MailApi.getTotalCount('outbox')
+                .then((resp) => {
+                  this.setState({ total: resp.data });
+                  const { total, current } = this.state;
+                  if ((total % 10 === 0) && total / 10 < current) {
+                    this.setState((prev) => {
+                      return {
+                        total: prev.total - 1,
+                      };
+                    });
+                  }
+                  this.getData(this.state.current);
+                });
               this.setState({ selectedKeys: [] });
             })
             .then(() => {

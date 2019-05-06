@@ -5,7 +5,6 @@ import MailApi from '../../api/mail';
 
 @withRouter
 export default class Inbox extends Component {
-
   state = {
     current: 1,
     total: 0,
@@ -14,9 +13,9 @@ export default class Inbox extends Component {
     isLoading: true,
   };
 
-  getData = (pageNo, total) => {
+  getData = (pageNo) => {
     this.setState({ isLoading: true });
-    MailApi.getList('spam', pageNo, total)
+    MailApi.getList('spam', pageNo)
       .then((resp) => {
         this.setState({ dataSource: resp.data, isLoading: false });
       });
@@ -25,9 +24,8 @@ export default class Inbox extends Component {
   componentWillMount() {
     MailApi.getTotalCount('spam')
       .then((resp) => {
-        const total = resp.data;
-        this.getData(1, total);
-        this.setState({ total });
+        this.getData(1);
+        this.setState({ total: resp.data });
       });
   }
 
@@ -35,7 +33,7 @@ export default class Inbox extends Component {
     this.setState({
       current,
     });
-    this.getData(current, this.state.total);
+    this.getData(current);
   };
 
   onRowChange = (selectedKeys) => {
@@ -58,10 +56,22 @@ export default class Inbox extends Component {
       content: '您确定要将所选邮件彻底删除吗？这一操作不可恢复',
       onOk: () => {
         return new Promise((resolve) => {
-          MailApi.del(this.state.selectedKeys, 'inbox')
+          MailApi.del(this.state.selectedKeys, 'spam')
             .then(() => {
               Message.success('所选邮件已删除');
-              this.getData();
+              MailApi.getTotalCount('spam')
+                .then((resp) => {
+                  this.setState({ total: resp.data });
+                  const { total, current } = this.state;
+                  if ((total % 10 === 0) && total / 10 < current) {
+                    this.setState((prev) => {
+                      return {
+                        total: prev.total - 1,
+                      };
+                    });
+                  }
+                  this.getData(this.state.current);
+                });
               this.setState({ selectedKeys: [] });
             })
             .then(() => {
@@ -81,7 +91,19 @@ export default class Inbox extends Component {
           MailApi.move(this.state.selectedKeys, 'spam', 'inbox')
             .then(() => {
               Message.success('这些邮件已被移回收件箱');
-              this.getData();
+              MailApi.getTotalCount('spam')
+                .then((resp) => {
+                  this.setState({ total: resp.data });
+                  const { total, current } = this.state;
+                  if ((total % 10 === 0) && total / 10 < current) {
+                    this.setState((prev) => {
+                      return {
+                        total: prev.total - 1,
+                      };
+                    });
+                  }
+                  this.getData(this.state.current);
+                });
             })
             .then(() => {
               resolve(true);

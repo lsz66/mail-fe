@@ -10,9 +10,9 @@ async function getTotalCount(box) {
   });
 }
 
-async function getList(box, pageNo, total) {
+async function getList(box, pageNo) {
   return axios({
-    url: `${BASE_URL}${SERVICE_URL}/list/${box}/${pageNo}/${total}`,
+    url: `${BASE_URL}${SERVICE_URL}/list/${box}/${pageNo}`,
     method: 'get',
   });
 }
