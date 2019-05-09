@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import BraftEditor from 'braft-editor';
 import { withRouter } from 'react-router-dom';
+import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/braft.css';
 import IceContainer from '@icedesign/container';
-import { Button, Dialog, Form, Grid, Input, Message } from '@alifd/next';
+import { Button, Form, Grid, Input, Message } from '@alifd/next';
 import {
   FormBinder as IceFormBinder,
   FormBinderWrapper as IceFormBinderWrapper,
@@ -19,14 +19,19 @@ const FormItem = Form.Item;
 export default class ContentEditor extends Component {
   static displayName = 'ContentEditor';
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: {
-        reply: false,
-      },
-      sending: false,
-    };
+  state = {
+    value: {},
+    sending: false,
+  };
+
+  componentWillMount() {
+    MailApi.read('outbox', location.hash.substring(8))
+      .then((resp) => {
+        const { to, subject, text } = resp.data;
+        this.setState({
+          value: { to, subject, text, reply: false },
+        });
+      });
   }
 
   formChange = (value) => {
@@ -60,14 +65,6 @@ export default class ContentEditor extends Component {
       });
   };
 
-  handleExit = () => {
-    Dialog.confirm({
-      title: '确定',
-      content: '您确定要退出吗？邮件将会被丢弃',
-      onOk: () => this.props.history.push('/dashboard'),
-    });
-  };
-
   render() {
     return (
       <div className="content-editor">
@@ -79,7 +76,7 @@ export default class ContentEditor extends Component {
           onChange={this.formChange}
         >
           <IceContainer>
-            <h2 style={styles.title}>写邮件</h2>
+            <h2 style={styles.title}>回复邮件</h2>
             <Form labelAlign="top" style={styles.form}>
               <Row>
                 <Col span="24">
@@ -106,7 +103,7 @@ export default class ContentEditor extends Component {
               <FormItem label="正文">
                 <IceFormBinder name="text">
                   <BraftEditor
-                    initialContent="<p></p>"
+                    initialContent={this.state.value.text}
                     height={300}
                     contentFormat="html"
                   />

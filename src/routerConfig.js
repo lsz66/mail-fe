@@ -3,19 +3,21 @@
 // 变量名 routerConfig 为 iceworks 检测关键字，请不要修改名称
 import UserLogin from './pages/UserLogin';
 import UserRegister from './pages/UserRegister';
+import Setting from './pages/Setting';
 import Dashboard from './pages/Dashboard';
 
-import Setting from './pages/Setting';
 import SendMail from './pages/SendMail';
-import Read from './pages/Read';
+import EditMail from './pages/EditMail';
+import ReplyMail from './pages/ReplyMail';
+import ReSend from './pages/ReSend';
 import Success from './pages/Success';
 
 import Inbox from './pages/Inbox';
 import Outbox from './pages/Outbox';
 import DraftBox from './pages/Draftbox';
 import SpamBox from './pages/Spambox';
-import EditMail from './pages/EditMail';
 import Recycle from './pages/Recycle';
+import Read from './pages/Read';
 
 const routerConfig = [
   {
@@ -69,6 +71,14 @@ const routerConfig = [
   {
     path: '/edit',
     component: EditMail,
+  },
+  {
+    path: '/reply',
+    component: ReplyMail,
+  },
+  {
+    path: '/resend',
+    component: ReSend,
   },
 ];
 

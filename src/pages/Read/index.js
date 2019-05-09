@@ -160,6 +160,16 @@ export default class ReadMail extends Component {
       });
   };
 
+  handleReply = () => {
+    const { id } = this.state;
+    this.props.history.push(`/reply/${id}`);
+  };
+
+  handleReSend = () => {
+    const { id } = this.state;
+    this.props.history.push(`/resend/${id}`);
+  };
+
   render() {
     const { subject, from, to, receiveTime, text, state, spamLoading, hamLoading, showSpamMsg, box } = this.state;
     const spamMsg = (
@@ -175,7 +185,7 @@ export default class ReadMail extends Component {
       <li style={styles.detailItem}>
         <div style={styles.detailTitle}>操作</div>
         <div style={styles.detailBody}>
-          <Button type="secondary" style={styles.button} onClick={this.getData} size="small">
+          <Button type="secondary" style={styles.button} onClick={this.handleReply} size="small">
             回复
           </Button>
           <Button style={styles.button} onClick={this.handleMoveToRecycle} size="small">
@@ -194,7 +204,7 @@ export default class ReadMail extends Component {
       <li style={styles.detailItem}>
         <div style={styles.detailTitle}>操作</div>
         <div style={styles.detailBody}>
-          <Button type="secondary" style={styles.button} onClick={this.getData} size="small">
+          <Button type="secondary" style={styles.button} onClick={this.handleReSend} size="small">
             再次发送
           </Button>
           <Button style={styles.button} warning onClick={this.handleDelete} size="small">

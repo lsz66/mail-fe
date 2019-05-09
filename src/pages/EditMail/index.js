@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/braft.css';
 import IceContainer from '@icedesign/container';
 import { Button, Dialog, Form, Grid, Input, Message } from '@alifd/next';
@@ -18,17 +19,17 @@ const FormItem = Form.Item;
 export default class ContentEditor extends Component {
   static displayName = 'ContentEditor';
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: {},
-      sending: false,
-    };
+  state = {
+    value: {},
+    sending: false,
+  };
+
+  componentWillMount() {
     DraftApi.getById(location.hash.substring(7))
       .then((resp) => {
-        const { id, to, subject, text } = resp.data;
+        const { id, userId, to, subject, text, reply } = resp.data;
         this.setState({
-          value: { id, to, subject, text },
+          value: { id, userId, to, subject, text, reply },
         });
       });
   }
@@ -90,10 +91,6 @@ export default class ContentEditor extends Component {
   };
 
   render() {
-    let BraftEditor;
-    import('braft-editor').then((module) => {
-      BraftEditor = module;
-    });
     return (
       <div className="content-editor">
         <IceFormBinderWrapper

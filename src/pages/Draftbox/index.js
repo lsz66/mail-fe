@@ -7,7 +7,6 @@ export default class DraftBox extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: 1,
       dataSource: [],
       selectedKeys: [],
       isLoading: true,
@@ -17,7 +16,6 @@ export default class DraftBox extends Component {
   getData = () => {
     DraftApi.getList()
       .then((resp) => {
-        console.log(resp.data);
         this.setState({ dataSource: resp.data, isLoading: false });
       });
   };
@@ -27,7 +25,6 @@ export default class DraftBox extends Component {
   }
 
   onRowChange = (selectedKeys) => {
-    console.log(selectedKeys);
     this.setState({
       selectedKeys,
     });
