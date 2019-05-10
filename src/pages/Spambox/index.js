@@ -88,28 +88,29 @@ export default class Inbox extends Component {
       content: '确定要把这些邮件标记为正常邮件吗？',
       onOk: () => {
         return new Promise((resolve) => {
-          MailApi.move(this.state.selectedKeys, 'spam', 'inbox')
-            .then(() => {
-              Message.success('这些邮件已被移回收件箱');
-              MailApi.getTotalCount('spam')
-                .then((resp) => {
-                  this.setState({ total: resp.data });
-                  const { total, current } = this.state;
-                  if ((total % 10 === 0) && total / 10 < current) {
-                    this.setState((prev) => {
-                      return {
-                        total: prev.total - 1,
-                      };
-                    });
-                  }
-                  this.getData(this.state.current);
-                });
-            })
-            .then(() => {
-              resolve(true);
-            });
           MailApi.markAs('spam', this.state.selectedKeys, 'ham')
-            .then();
+            .then(() => {
+              MailApi.move(this.state.selectedKeys, 'spam', 'inbox')
+                .then(() => {
+                  Message.success('这些邮件已被移回收件箱');
+                  MailApi.getTotalCount('spam')
+                    .then((resp) => {
+                      this.setState({ total: resp.data });
+                      const { total, current } = this.state;
+                      if ((total % 10 === 0) && total / 10 < current) {
+                        this.setState((prev) => {
+                          return {
+                            total: prev.total - 1,
+                          };
+                        });
+                      }
+                      this.getData(this.state.current);
+                    });
+                })
+                .then(() => {
+                  resolve(true);
+                });
+            });
         });
       },
     });

@@ -139,17 +139,18 @@ export default class Inbox extends Component {
       content: '这些邮件是垃圾邮件吗？',
       onOk: () => {
         return new Promise((resolve) => {
-          MailApi.move(this.state.selectedKeys, 'inbox', 'spam')
-            .then(() => {
-              Message.success('这些邮件已被移到垃圾箱');
-              this.handleReceive(this.state.current);
-              this.setState({ selectedKeys: [] });
-            })
-            .then(() => {
-              resolve(true);
-            });
           MailApi.markAs('inbox', this.state.selectedKeys, 'spam')
-            .then();
+            .then(() => {
+              MailApi.move(this.state.selectedKeys, 'inbox', 'spam')
+                .then(() => {
+                  Message.success('这些邮件已被移到垃圾箱');
+                  this.handleReceive(this.state.current);
+                  this.setState({ selectedKeys: [] });
+                })
+                .then(() => {
+                  resolve(true);
+                });
+            });
         });
       },
     });
