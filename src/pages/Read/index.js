@@ -46,16 +46,16 @@ export default class ReadMail extends Component {
       content: '这封邮件是垃圾邮件吗？',
       onOk: () => {
         return new Promise((resolve) => {
-          MailApi.move([id], box, 'spam')
-            .then(() => {
-              Message.success('这封邮件已被移到垃圾箱');
-              this.props.history.push('/inbox');
-            })
-            .then(() => {
-              resolve(true);
-            });
           MailApi.markAs(box, [id], 'spam')
             .then(() => {
+              MailApi.move([id], box, 'spam')
+                .then(() => {
+                  Message.success('这封邮件已被移到垃圾箱');
+                  this.props.history.push('/inbox');
+                })
+                .then(() => {
+                  resolve(true);
+                });
             });
         });
       },
@@ -109,15 +109,16 @@ export default class ReadMail extends Component {
       content: '这封邮件是普通邮件吗，如果是，该邮件将移回收件箱？',
       onOk: () => {
         return new Promise((resolve) => {
-          MailApi.move([id], box, 'inbox')
-            .then(() => {
-              Message.success('此已经移回收件箱');
-            })
-            .then(() => {
-              resolve(true);
-            });
           MailApi.markAs(box, [id], 'ham')
-            .then();
+            .then(() => {
+              MailApi.move([id], box, 'inbox')
+                .then(() => {
+                  Message.success('此已经移回收件箱');
+                })
+                .then(() => {
+                  resolve(true);
+                });
+            });
         });
       },
     });
@@ -146,17 +147,17 @@ export default class ReadMail extends Component {
   handleSpam = () => {
     const { box, id } = this.state;
     this.setState({ spamLoading: true });
-    MailApi.move([id], box, 'spam')
-      .then(() => {
-        Message.success('邮件已移动到垃圾箱');
-        this.props.history.push('/inbox');
-      })
-      .catch(() => {
-        Message.error('服务器出错');
-        this.setState({ spamLoading: false });
-      });
     MailApi.markAs(box, [id], 'spam')
       .then(() => {
+        MailApi.move([id], box, 'spam')
+          .then(() => {
+            Message.success('邮件已移动到垃圾箱');
+            this.props.history.push('/inbox');
+          })
+          .catch(() => {
+            Message.error('服务器出错');
+            this.setState({ spamLoading: false });
+          });
       });
   };
 
